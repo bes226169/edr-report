@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\EDR_Report.props" />
+</Project>

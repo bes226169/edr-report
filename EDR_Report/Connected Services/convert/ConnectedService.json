@@ -1,0 +1,16 @@
+﻿{
+  "ExtendedData": {
+    "inputs": [
+      "https://besapi.bes.com.tw:8071/ConvertFile.asmx"
+    ],
+    "collectionTypes": [
+      "System.Array",
+      "System.Collections.Generic.Dictionary`2"
+    ],
+    "namespaceMappings": [
+      "*, convert"
+    ],
+    "targetFramework": "net6.0",
+    "typeReuseMode": "All"
+  }
+}

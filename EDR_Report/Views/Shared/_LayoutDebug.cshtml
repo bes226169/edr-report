@@ -1,0 +1,98 @@
+﻿@{
+    UserInfoModel UserInfo = ViewBag.UserInfo;
+}
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <base href="@ViewBag.BaseUrl" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>營建管理系統</title>
+    <meta name="description" content="BES營管" />
+    <meta name="author" content="中華工程資訊處" />
+    <link rel="shortcut icon" href="~/favicon.ico" />
+    <link rel="stylesheet" href="~/lib/bootswatch/flatly/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/perfect-scrollbar/css/perfect-scrollbar.min.css" />
+    <link rel="stylesheet" href="~/lib/boxicons/css/boxicons.min.css" />
+    <link rel="stylesheet" href="~/lib/tom-select/css/tom-select.bootstrap5.min.css" />
+    <link rel="stylesheet" href="~/css/styles.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="~/lib/vue/vue.global.prod.min.js"></script>
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+        var $ = jQuery;
+    </script>
+</head>
+<body class="sb-nav-fixed">
+    <nav id="master-nav" class="sb-topnav navbar navbar-expand navbar-dark bg-primary justify-content-between d-block d-md-flex align-items-center">
+        <div class="nav-header d-flex justify-content-between justify-content-start align-items-center">
+            <a class="navbar-brand ps-3" href="~/home/index">
+                <img src="~/images/BESLOGO.png" style="width:26px;height:26px;" />
+                BES營建管理系統
+                <span class="navbar-brand-sub">@Html.Raw(ViewBag.HostName)</span>
+            </a>
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="javascript:void(0)">
+                <i class="bx bx-menu fs-4"></i>
+            </button>
+        </div>
+        <div class="nav-tool d-flex bg-primary justify-content-end align-items-center pb-2 pb-md-0">
+            <ul class="navbar-nav ms-3 me-2 me-lg-4">
+                <li class="nav-item dropdown ms-2">
+                    <a class="nav-link dropdown-toggle d-flex justify-content-start align-items-center" id="navddlUserInfo" href="javascript:void(0)" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bx bxs-user fs-5"></i>
+                        <span class="d-none d-md-block ms-1">@Html.Raw(UserInfo.UserData.CH_NAME)</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navddlUserInfo">
+                        <li><span class="dropdown-item"><i class="bx bxs-bookmark me-1"></i>@Html.Raw(UserInfo.DeptInfo.JOB_CH)</span></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li>
+                            <div class="dropdown-item">
+                                <div><i class="bx bx-user me-1"></i>使用者資訊：</div>
+                                <div>@Html.Raw(UserInfo.UserData.CH_NAME)</div>
+                                <div>@Html.Raw(UserInfo.DeptInfo.DEPT_CH)</div>
+                                <div class="text-danger">@Html.Raw(UserInfo.RespName)</div>
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item hover-icon-ani-fade-left" href="/logout"><i class="bx bx-log-out me-1"></i>登出</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div id="layoutSidenav">
+        @await Html.PartialAsync("_MenuPartial")
+        <div id="layoutSidenav_content">
+            <div id="main-sticky" class="sticky-top">
+                <div class="bg-light py-2 px-3 fw-bold fs-4 d-flex justify-content-start align-items-center m-0">
+                    <a id="btnPinProj" class="me-2 hover-child-fade d-flex justify-content-start align-items-center text-decoration-none" style="height:2rem" href="javascript:void()">
+                        <i class="bi bi-pin-fill"></i>
+                    </a>
+                    <div style="height:2rem" class="text-overflow-ellipsis">@Html.Raw(UserInfo.ProjectName)</div>
+                </div>
+            </div>
+            <main class="container-fluid m-0 p-0 placeholder-glow h-100">
+                <div id="renderbody" class="placeholder h-100">
+                    @RenderBody()
+                </div>
+            </main>
+        </div>
+    </div>
+    <footer id="layoutFooter" class="footer bg-primary text-muted py-3 px-2 px-md-4 d-flex justify-content-between align-items-center">
+        <div class="w-100">
+            2022 © 中華工程
+        </div>
+    </footer>
+
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="~/lib/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="~/lib/moment.js/moment.min.js"></script>
+    <script src="~/lib/moment.js/moment-with-locales.min.js"></script>
+    <script src="~/lib/tom-select/js/tom-select.complete.min.js"></script>
+    <script src="~/js/bes.vue.plugins.js"></script>
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>

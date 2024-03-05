@@ -1,0 +1,78 @@
+﻿@charset "UTF-8";
+html, body {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+}
+body {
+    background-image: url(../images/bg_2.png);
+    color: #7f7f7f;
+}
+.main-login {
+    width: 580px;
+    margin: 10% auto 0 auto;
+    background: #fff;
+    padding: 10px;
+}
+#my-signin3 button.google {
+    width: 100%;
+    height: 50px;
+    box-sizing: border-box;
+    position: relative;
+    margin: 15px auto;
+    padding: 0 15px 0 46px;
+    border: none;
+    text-align: center;
+    line-height: 34px;
+    white-space: nowrap;
+    border-radius: 15px;
+    font-size: 16px;
+    color: #fff;
+    background: #DD4B39;
+    cursor: pointer;
+    font-size: 20px;
+    font-family: "Cormorant Garamond";
+}
+
+    #my-signin3 button.google:before {
+        content: "";
+        box-sizing: border-box;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 62px;
+        height: 100%;
+        border-right: 1px solid;
+        border-color: rgba(255, 232, 232, 0.5);
+        background: url("../images/icon_google.png") 20px 15px no-repeat;
+    }
+
+    #my-signin3 button.google:hover {
+        background-color: #c23321;
+    }
+input#password {
+    padding-right: 70px;
+}
+a.forgot {
+    position: absolute;
+    top: 14px;
+    right: 10px;
+    text-decoration: none;
+    color: #7f7f7f;
+}
+a.forgot:hover {
+    color: var(--bs-link-hover-color);
+}
+.input-icon i {
+    position: absolute;
+    top: 10px;
+    -moz-transform: translateY(100%);
+    left: 12px;
+}
+
+@media screen and (max-width: 767px) {
+    .main-login {
+        width: 100%;
+        margin: 0;
+    }
+}

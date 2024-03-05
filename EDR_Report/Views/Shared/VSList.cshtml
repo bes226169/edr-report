@@ -1,0 +1,23 @@
+﻿@{
+    Layout = "";
+}
+<div class="p-0 w-100 d-flex justify-content-center align-items-start flex-wrap">
+    @{
+        int y = 0;
+        var block_img = (Dictionary<int, string>)ViewBag.BlockImg;
+        @foreach (var d in (List<dynamic>)ViewBag.List)
+        {
+            var z = y % block_img.Count;
+            <div class="main-link-block">
+                <div class="block-img" style="background:url(@Html.Raw(Url.Content($"~/images/{block_img[z]}")))"></div>
+                <span class="block-name">@Html.Raw(d.PRO_DESC)</span>
+                <a class="block-overlay" href="javascript:@Html.Raw((string?)d.OPENKIND switch {
+                    "1" => $"win_open('{d.PRO_ID}', '{d.URL}', '{d.PRO_DESC}')",
+                    "2" => $"win_open('{d.PRO_ID}', '{d.URL}')",
+                    _ => $"load_check('{d.URL}')"
+                })"></a>
+            </div>
+            y++;
+        }
+    }
+</div>

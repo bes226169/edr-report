@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <base href="@ViewBag.BaseUrl" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>營建管理系統</title>
+    <meta name="description" content="BES營管" />
+    <meta name="author" content="中華工程資訊處" />
+    <link rel="shortcut icon" href="~/favicon.ico" />
+    <link rel="stylesheet" href="~/lib/bootswatch/flatly/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/perfect-scrollbar/css/perfect-scrollbar.min.css" />
+    <link rel="stylesheet" href="~/lib/boxicons/css/boxicons.min.css" />
+    <link rel="stylesheet" href="~/lib/tom-select/css/tom-select.bootstrap5.min.css" />
+    <link rel="stylesheet" href="~/css/styles.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="~/lib/vue/vue.global.min.js"></script>
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+        var $ = jQuery;
+    </script>
+</head>
+<body>
+    <div id="">
+        <div id="layoutSidenav_content">
+            <main class="container-fluid m-0 p-0">
+                <div id="renderbody">
+                    @RenderBody()
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="~/lib/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="~/lib/moment.js/moment.min.js"></script>
+    <script src="~/lib/moment.js/moment-with-locales.min.js"></script>
+    <script src="~/lib/tom-select/js/tom-select.complete.min.js"></script>
+    <script src="~/js/bes.vue.plugins.js"></script>
+    <script src="~/js/common.js" asp-append-version="true"></script>
+</body>
+</html>

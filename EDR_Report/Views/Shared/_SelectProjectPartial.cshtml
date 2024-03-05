@@ -1,0 +1,91 @@
+﻿<div id="selectProjectApp" v-cloak>
+    <a id="btnSelectProj" class="nav-link fixed-sticky-margin text-warning" href="javascript:void(0)" v-on:click="show_dlg">
+        <div class="sb-nav-link-icon me-1"><i class="bx bx-calendar"></i></div>
+        切換工務所與專案
+    </a>
+    <teleport to="body">
+        <bs-modal v-if="showDlg" :is-show="openDlg" fullscreen="lg" size="lg" header-class="bg-primary text-light" :on-shown="init_dlg" :on-hidden="() => showDlg = false">
+            <template #header>
+                <h5>
+                    <i class="bx bx-calendar me-1"></i>切換工務所與專案
+                </h5>
+                <bs-close :white="true" v-on:click="openDlg = false"></bs-close>
+            </template>
+            <template #footer>
+                <button class="btn btn-sm btn-outline-dark hover-icon-ani-spin" v-on:click="openDlg = false">
+                    <i class="bx bx-x me-1"></i>
+                    關閉
+                </button>
+            </template>
+            <div class="row gx-1 gy-2">
+                <div class="col-12">
+                    <div class="form-floating">
+                        <select class="form-select" id="area_s" v-on:change="change_div">
+                            <option v-for="d in dept" :value="d.DIV">{{d.DIV_CH}}</option>
+                        </select>
+                        <label>工務所</label>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-floating">
+                        <input class="form-control" autocomplete="off" v-model.trim="projName" v-on:keyup="search(false)" />
+                        <label>專案名稱</label>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <paging-info :count="filterProj.length" :total="proj.length" v-model="pageSize" :no-margin-bottom="true"></paging-info>
+                </div>
+                <div class="col-12 col-md-6 justify-content-md-end d-flex">
+                    <bs-paging :max="Math.ceil(filterProj.length / pageSize)"
+                               :now="pageNumber"
+                               :no-margin-bottom="true"
+                               :hide-text="true"
+                               :hide-dot="true"
+                               :page-change="to_page"
+                               :count="6"
+                               v-if="filterProj.length > 0"
+                               to-first-html="<i class='bx bxs-arrow-to-left'></i>"
+                               to-last-html="<i class='bx bxs-arrow-to-right'></i>"
+                               to-prev-html="<i class='bx bx-left-arrow-alt'></i>"
+                               to-next-html="<i class='bx bx-right-arrow-alt'></i>"></bs-paging>
+                </div>
+                <div class="col-12 table-responsive">
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr class="table-primary">
+                                <th class="cursor-pointer" v-on:click="sort">
+                                    專案名稱
+                                    <i :class="['bx', sortDescProj ? 'bx-sort-z-a' : 'bx-sort-a-z', 'ms-1']"></i>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-if="!openDlg">
+                                <tr>
+                                    <td class="text-center">
+                                        載入中，請稍後...
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-else-if="filterProj.length == 0">
+                                <tr>
+                                    <td class="text-center">
+                                        沒有符合條件的專案...
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-else>
+                                <tr v-for="p in pagingProj">
+                                    <td class="cursor-pointer hover-before-arrow" v-on:click="e => change_project(e, p.PID)" :title="p.PNAME">
+                                        {{p.PNAME}}
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </bs-modal>
+    </teleport>
+</div>
+<script src="~/pages/home/SelectProject.js" asp-append-version="true"></script>

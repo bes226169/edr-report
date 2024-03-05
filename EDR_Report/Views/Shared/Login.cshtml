@@ -1,0 +1,102 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <base href="@ViewBag.BaseUrl" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>營建管理系統</title>
+    <meta name="description" content="BES營管" />
+    <meta name="author" content="中華工程資訊處" />
+    <link rel="shortcut icon" href="~/favicon.ico" />
+    <link rel="stylesheet" href="~/lib/bootswatch/flatly/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/perfect-scrollbar/perfect-scrollbar.min.js" />
+    <link rel="stylesheet" href="~/lib/boxicons/css/boxicons.min.css" />
+    <link rel="stylesheet" href="~/css/styles.css" />
+    <link rel="stylesheet" href="~/css/login.css" />
+    <script src="~/lib/vue/vue.global.min.js"></script>
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+        var $ = jQuery;
+    </script>
+</head>
+<body>
+    <form action="/Login/LoginCheck" method="post">
+        <div id="app" class="main-login" v-cloak>
+            <div class="box-login">
+                <div>
+                    <h2 style="font-weight:bold;font-family:DFKai-sb;">
+                        營建管理資訊系統
+                        <span style="color:#787878;font-size:18px">@Html.Raw(ViewBag.HostName)</span>
+                    </h2>
+
+                </div>
+                <div id="my-signin3">
+                    <button type="button" class="google" v-on:click="login()">使用Google登入</button>
+                </div>
+                <hr />
+                <span id="blockade" style="color:Red;font-size:20px;"></span>
+                @if (!string.IsNullOrEmpty(ViewBag.ErrorMsg))
+                {
+                    <div class="errorHandler alert alert-danger no-display">
+                        <i class="fa fa-remove-sign"></i> @Html.Raw(ViewBag.ErrorMsg)
+                    </div>
+                }
+                <h3>Sign in to your account</h3>
+                <p>
+                    Please enter your name and password to log in.
+                </p>
+                <fieldset>
+                    <div class="form-floating mb-2">
+                        <input type="text" class="form-control" name="username" placeholder="工號 EmpNO" id="username" required />
+                        <label for="username"><i class="bx bx-user me-1"></i>工號 EmpNO</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="password" class="form-control password" name="password" placeholder="密碼 Password" id="password" value="" required />
+                        <label for="password"><i class="bx bx-lock-alt me-1"></i>密碼 Password</label>
+                    </div>
+                    <div class="form-group mb-2">
+                        <span class="input-icon position-relative">
+                            <select name="language" class="form-control" style="padding-left: 30px;" id="language" disabled="disabled">
+                                <option value="zh-tw">(zh-tw)中文</option>
+                                <option value="en-us">(en-us)英文</option>
+                            </select>
+                            <i class="bx bx-globe"></i>
+                            <input name="languageh" type="text" id="languageh" style="display: none;" />
+                        </span>
+                    </div>
+                    <div class="mb-2 d-flex align-items-center justify-content-start">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" name="cacode" id="cacode" placeholder="驗證碼 CAPTCHA" maxlength="4" autocomplete="off" required />
+                            <label for="cacode"><i class="bx bx-edit-alt me-1"></i>驗證碼 CAPTCHA</label>
+                        </div>
+                        <a id="resetCaptchaImg" class="ms-3" href="javascript:void(0)" v-on:click="reset_captcha_img()">
+                            <img id="imgCa" :src="imgCa" title="更換驗證碼">
+                        </a>
+                    </div>
+                    <div class="form-actions d-flex justify-content-end mb-2">
+                        <input type="submit" name="Login_ClickA" value="登入" id="Login_ClickA" Class="btn btn-success pull-right SubmitBtn" />
+                    </div>
+                    <div class="new-account">
+                        為界定個人工作責任及資料安全性，請勿外借帳號，退出系統請選取 [登出] 功能
+                    </div>
+                </fieldset>
+            </div>
+            <div class="copyright">
+                <script type="text/javascript">
+                    document.write(new Date().getFullYear())
+                </script> &copy; 中華工程 版權所有.    All Rights Reserved.
+            </div>
+        </div>
+    </form>
+
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="~/js/bes.vue.plugins.js"></script>
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script src="~/pages/login/Index.js" asp-append-version="true"></script>
+</body>
+</html>

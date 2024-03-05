@@ -1,0 +1,23 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33815.320
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{6913197D-B255-4BC4-80C7-F8EF0AA4860B}") = "EDR_Report", "EDR_Report\EDR_Report.csproj", "{ACCE024C-70C5-48C3-9588-CCEC2F222C12}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ACCE024C-70C5-48C3-9588-CCEC2F222C12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACCE024C-70C5-48C3-9588-CCEC2F222C12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACCE024C-70C5-48C3-9588-CCEC2F222C12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACCE024C-70C5-48C3-9588-CCEC2F222C12}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AAF2F095-065F-48BF-A26F-21E972C53799}
+	EndGlobalSection
+EndGlobal

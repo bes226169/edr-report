@@ -1,0 +1,101 @@
+﻿@using EDR_Report.Models.CPM
+@{
+    UserInfoModel UserInfo = ViewBag.UserInfo;
+
+    (List<CPM_PROGRAMME_LISTModel> allLi, List<CPM_PROGRAMME_LISTModel> progLi, List<CPM_PROGRAMME_LISTModel> apLi, bool showOrgAdmin, bool showPermission, string[] pro_id)
+        GetMenuList()
+    {
+        bool _soa = false, _sp = false;
+
+        if (UserInfo.HasAuth("prvOrgAdmin_c")) _soa = _sp = true;
+        var db = new DBFunc();
+        var allLi = db.query<CPM_PROGRAMME_LISTModel>("cpm", "SELECT * FROM CPM_PROGRAMME_LIST WHERE FLAG = '1' ORDER BY TYPE").ToList();
+        var progLi = new List<CPM_PROGRAMME_LISTModel>();
+
+        // 判斷是否要顯示專案相關選單項目
+        if (UserInfo.HasAuth("prvPlanner_c") || UserInfo.ProjectID == 137) // 137 => 專案:估算作業測試
+        {
+            progLi = allLi.Where(x => x.GROUPKIND2 == "vs").ToList();
+        }
+
+        // 取得pro_id
+        var pro_id = db.query<dynamic>("cpm", @"SELECT DISTINCT C.PRO_ID FROM CPM_AUTH A
+INNER JOIN CPM_PRIVILEGES_LIST B ON UPPER(B.PRI_NAME) = UPPER(A.PRI_NAME)
+INNER JOIN CPM_PRIVILEGES_PROGRAMME C ON C.PRI_ID = B.PRI_ID
+WHERE A.EMPNO = :EMPNO", new
+        {
+            UserInfo.EMPNO
+        }).Select(x => ((int)x.PRO_ID).ToString()).ToArray();
+
+        // 取得管報項目
+        var apLi = allLi.Where(x => x.GROUPKIND2 != "vs" && x.GROUPKIND_RANK2 == 0).ToList();
+        return (allLi, progLi, apLi, _soa, _sp, pro_id);
+    }
+    (var allLi, var progLi, var apLi, var showOrgAdmin, var showPermission, var pro_id) = GetMenuList();
+    var apChild = new Dictionary<int, int>();
+    apLi.ForEach(p =>
+    {
+        int s = allLi.Where(x => string.IsNullOrEmpty(x.GROUPKIND0) && string.IsNullOrEmpty(x.GROUPKIND1) && x.GROUPKIND2 == p.GROUPKIND2 && x.GROUPKIND_RANK2 != 0 && pro_id.Contains(((decimal?)x.PRO_ID).ToString())).Count();
+        apChild.Add(p.PRO_ID!.Value, s);
+    });
+}
+<div id="layoutSidenav_nav">
+    <nav class="sb-sidenav accordion bg-primary position-relative" id="sidenavAccordion">
+        <div class="sb-sidenav-menu">
+            <div class="nav">
+                @await Html.PartialAsync("_SelectProjectPartial")
+                @{
+                    var first = progLi.Where(x => x.GROUPKIND_RANK2 == 0).ToList();
+                    foreach (var d1 in first)
+                    {
+                        var second = progLi.Where(x => x.GROUPKIND0 == d1.GROUPKIND0 && x.GROUPKIND_RANK2 == 1).ToList();
+                        <a class="nav-link collapsed" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#saProj_@Html.Raw(d1.PRO_ID.ToString())" aria-expanded="false" aria-controls="_@Html.Raw(d1.PRO_ID.ToString())">
+                            <div class="sb-nav-link-icon me-1"><i class='bx bxs-folder-open'></i></div>
+                            @Html.Raw(d1.PRO_DESC)
+                            <div class="sb-sidenav-collapse-arrow"><i class="bx bxs-down-arrow"></i></div>
+                        </a>
+                        <div class="collapse" id="saProj_@Html.Raw(d1.PRO_ID.ToString())" aria-labelledby="@Html.Raw(d1.PRO_DESC)" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav accordion">
+                                @foreach (dynamic d2 in second)
+                                {
+                                    var third = progLi.Where(x => x.GROUPKIND1 == d2.GROUPKIND1 && x.GROUPKIND_RANK2 == 2).ToList();
+                                    <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#saProj_@Html.Raw(d2.PRO_ID.ToString())" aria-expanded="false" aria-controls="_@Html.Raw(d2.PRO_ID.ToString())">
+                                        <div class="sb-nav-link-icon me-1"><i class='bx bxs-folder-open'></i></div>
+                                        @Html.Raw(d2.PRO_DESC)
+                                        <div class="sb-sidenav-collapse-arrow"><i class="bx bxs-down-arrow"></i></div>
+                                    </a>
+                                    <div class="collapse" id="saProj_@Html.Raw(d2.PRO_ID.ToString())" aria-labelledby="@Html.Raw(d2.PRO_DESC)" data-bs-parent="#saProj_@Html.Raw(d1.PRO_ID.ToString())">
+                                        <nav class="sb-sidenav-menu-nested nav accordion">
+                                            @foreach (dynamic d3 in third)
+                                            {
+                                                <a class="nav-link" href="javascript:load_check('@Html.Raw(d3.URL)');">@Html.Raw(d3.PRO_DESC)</a>
+                                            }
+                                        </nav>
+                                    </div>
+                                }
+                            </nav>
+                        </div>
+                    }
+                    foreach (var d in apLi)
+                    {
+                        int rcount =  apChild[d.PRO_ID!.Value] / 16;
+                        if (apChild[d.PRO_ID!.Value] % 16 > 0) rcount++;
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#saAp_@Html.Raw(d.PRO_ID.ToString())" aria-expanded="false" aria-controls="saAp_@Html.Raw(d.PRO_ID.ToString())">
+                            <div class="sb-nav-link-icon me-1"><i class="bx bx-cookie"></i></div>
+                            @Html.Raw(d.PRO_DESC)
+                            <div class="sb-sidenav-collapse-arrow"><i class="bx bxs-down-arrow"></i></div>
+                        </a>
+                        <div class="collapse" id="saAp_@Html.Raw(d.PRO_ID)" aria-labelledby="設定" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav accordion">
+                                @for (int x = 0; x < rcount; x++)
+                                {
+                                    <a class="nav-link" href="javascript:get_aplist('@Html.Raw(x + 1)', '@Html.Raw(d.GROUPKIND2)');">@Html.Raw(d.PRO_DESC + "-" + (x + 1).ToString())</a>
+                                }
+                            </nav>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </nav>
+</div>

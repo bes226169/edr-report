@@ -1,0 +1,118 @@
+﻿@{
+    UserInfoModel user = ViewBag.UserInfo;
+}
+<div id="app" class="row g-2 mt-3" v-cloak>
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <div class="form-floating">
+            <input type="date" class="form-control" autocomplete="off" v-model="dt" />
+            <label class="invalid-start">日報日期</label>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="input-group">
+            <div class="input-group-text">過濾</div>
+            <div class="form-floating">
+                <select class="form-select" v-model.number="pid" v-on:change="search">
+                    <option :value="0">全部</option>
+                    <option v-for="d in get_pid()" :value="d">{{d}}</option>
+                </select>
+                <label>Project ID</label>
+            </div>
+            <div class="form-floating">
+                <input class="form-control" autocomplete="off" v-model.trim="mn" v-on:keyup="search" placeholder="Method Name(不分大小寫)" />
+                <label>Method Name(不分大小寫)</label>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 table-responsive">
+        <table class="table table-hover table-striped table-bordered">
+            <thead>
+                <tr>
+                    <td>Project ID</td>
+                    <td>報表名稱</td>
+                    <td>Method Name</td>
+                    <td>選項</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="d in filter">
+                    <td>{{d.PROJECT_ID}}</td>
+                    <td>{{d.REPORT_NAME}}</td>
+                    <td>{{d.REPORT_ASP}}</td>
+                    <td>
+                        <button v-on:click="download(d)" class="btn btn-sm btn-outline-info">下載</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    $(() => {
+        VueApp({
+            data: () => ({
+                li: [],
+                filter: [],
+                dt: '',
+                pid: 0,
+                mn: ''
+            }),
+            mounted() {
+                this.dt = moment().format('YYYY-MM-DD');
+                this.get_data();
+            },
+            methods: {
+                get_data() {
+                    this.$loader.show();
+                    this.$ajax('/home/GetRptList', null, e => {
+                        this.$loader.hide();
+                        this.li = e.data;
+                        this.search();
+                    }, e => {
+                        this.$loader.hide();
+                        console.error(e);
+                        this.$swal.error('與伺服器連線時發生錯誤！');
+                    });
+                },
+                get_pid() {
+                    return this.li.map(x => x.PROJECT_ID);
+                },
+                search() {
+                    this.filter = this.li.filter(x => 
+                        (this.$isEmpty(this.pid) || (!this.$isEmpty(this.pid) && x.PROJECT_ID == this.pid)) && 
+                        (this.$isEmpty(this.mn) || (!this.$isEmpty(this.mn) && !this.$isEmpty(x.REPORT_ASP) && x.REPORT_ASP.toLowerCase().indexOf(this.mn.toLowerCase()) >= 0))
+                    );
+                },
+                download(d) {
+                    if (this.$isEmpty(this.dt)) {
+                        this.$swal.warning('請輸入日報日期');
+                    } else {
+                        this.$loader.show();
+                        let t = this.dt.replace(/\-/g, '');
+                        let url = `${this.$baseUrl}/edrrpt/${d.REPORT_ASP}/${t}?@Html.Raw($"vEmpno={user.EMPNO}&VSSessID={user.SessionID}")&proID=${d.PROJECT_ID}`;
+                        fetch(url, {
+                            method: 'GET',
+                            responseType: 'blob'
+                        }).then(e => {
+                            this.$loader.hide();
+                            if (!e.ok) throw '與伺服器連線時發生錯誤！';
+                            return e.blob();
+                        }).then(e => {
+                            let b = window.URL.createObjectURL(e);
+                            let a = document.createElement('a');
+                            a.href = b;
+                            a.download = `${d.REPORT_NAME}_${t}.xlsx`;
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                        }).catch(e => {
+                            this.$loader.hide();
+                            console.error(e);
+                            alert('與伺服器連線時發生錯誤！');
+                        });
+                    }
+                } 
+            }
+        }, '#app');
+    });
+</script>
