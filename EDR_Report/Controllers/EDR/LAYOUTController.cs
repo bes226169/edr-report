@@ -10,7 +10,9 @@ namespace EDR_Report.Controllers
 {
     public partial class ReportController
     {
-        
+        #region 測試
+        //小石測試
+        #endregion
         IActionResult RPTLAYOUT(string? state, string cd)
         {
             
