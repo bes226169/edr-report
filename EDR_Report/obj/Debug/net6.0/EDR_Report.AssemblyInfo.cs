@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EDR_Report")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+839fdb8398661092edb40d11c093c1e965e26ced")]
 [assembly: System.Reflection.AssemblyProductAttribute("EDR_Report")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EDR_Report")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -9,53 +9,55 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = EDR_Report
 build_property.RootNamespace = EDR_Report
-build_property.ProjectDir = D:\Github\edr-report\EDR_Report\
+build_property.ProjectDir = C:\Users\226178\Desktop\GitHub\edr-report\EDR_Report\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 6.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\Github\edr-report\EDR_Report
+build_property.MSBuildProjectDirectory = C:\Users\226178\Desktop\GitHub\edr-report\EDR_Report
 build_property._RazorSourceGeneratorDebug = 
 
-[D:/Github/edr-report/EDR_Report/Views/Home/Index.cshtml]
+[C:/Users/226178/Desktop/GitHub/edr-report/EDR_Report/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/edr-report/EDR_Report/Views/Shared/Error.cshtml]
+[C:/Users/226178/Desktop/GitHub/edr-report/EDR_Report/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/edr-report/EDR_Report/Views/Shared/ErrorMessage.cshtml]
+[C:/Users/226178/Desktop/GitHub/edr-report/EDR_Report/Views/Shared/ErrorMessage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yTWVzc2FnZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/edr-report/EDR_Report/Views/Shared/Login.cshtml]
+[C:/Users/226178/Desktop/GitHub/edr-report/EDR_Report/Views/Shared/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXExvZ2luLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/edr-report/EDR_Report/Views/Shared/VSList.cshtml]
+[C:/Users/226178/Desktop/GitHub/edr-report/EDR_Report/Views/Shared/VSList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFZTTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/edr-report/EDR_Report/Views/Shared/_Layout.cshtml]
+[C:/Users/226178/Desktop/GitHub/edr-report/EDR_Report/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/edr-report/EDR_Report/Views/Shared/_LayoutDebug.cshtml]
+[C:/Users/226178/Desktop/GitHub/edr-report/EDR_Report/Views/Shared/_LayoutDebug.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXREZWJ1Zy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/edr-report/EDR_Report/Views/Shared/_MenuPartial.cshtml]
+[C:/Users/226178/Desktop/GitHub/edr-report/EDR_Report/Views/Shared/_MenuPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9NZW51UGFydGlhbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/edr-report/EDR_Report/Views/Shared/_SelectProjectPartial.cshtml]
+[C:/Users/226178/Desktop/GitHub/edr-report/EDR_Report/Views/Shared/_SelectProjectPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9TZWxlY3RQcm9qZWN0UGFydGlhbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/edr-report/EDR_Report/Views/_ViewImports.cshtml]
+[C:/Users/226178/Desktop/GitHub/edr-report/EDR_Report/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Github/edr-report/EDR_Report/Views/_ViewStart.cshtml]
+[C:/Users/226178/Desktop/GitHub/edr-report/EDR_Report/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
