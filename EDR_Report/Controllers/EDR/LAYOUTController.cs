@@ -426,7 +426,7 @@ namespace EDR_Report.Controllers
                     // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
                     //AdjustRowHeight_1BB101(ws, variables, "$project_name$");
                     AdjustRowHeight(ws, variables, "$construction_item$");
-                    AdjustRowHeight(ws, variables, "$machine_col1$", "$material_col2$");
+                    AdjustRowHeight(ws, variables, "$machine_col1$", "$material_col2$", "$material_col2$");
                     AdjustRowHeight(ws, variables, "$note_a$");
                     AdjustRowHeight(ws, variables, "$note_c$");
                     AdjustRowHeight(ws, variables, "$note_d$");
