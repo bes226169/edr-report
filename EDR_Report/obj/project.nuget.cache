@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Ib3xRf4jT0gmRSndHSHP/IWk2s7XhqzYfigB0NF12uEcsAynhbGhFp0LvtvktzFjSZfOYlfPG+CC8EX3bfz6RA==",
+  "dgSpecHash": "GW7EcxzladyNe8gs9lxPc7jkLTh575W2UaHS2uoHxWtpDNRYtfmmnkIYkJAGOUtZE0zdlLSC3WLK7Zpzaccv7Q==",
   "success": true,
-  "projectFilePath": "C:\\Users\\226178\\Desktop\\ICCC_WEB\\日報範本\\EDR_Report\\EDR_Report\\EDR_Report.csproj",
+  "projectFilePath": "C:\\Users\\226178\\Desktop\\GitHub\\edr-report\\EDR_Report\\EDR_Report.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\226178\\.nuget\\packages\\bouncycastle.cryptography\\2.2.1\\bouncycastle.cryptography.2.2.1.nupkg.sha512",
     "C:\\Users\\226178\\.nuget\\packages\\dapper\\2.1.24\\dapper.2.1.24.nupkg.sha512",

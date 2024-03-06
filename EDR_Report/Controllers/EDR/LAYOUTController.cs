@@ -20,10 +20,83 @@ namespace EDR_Report.Controllers
             var calendarDate = new DateTime(int.Parse(cd[..4]), int.Parse(cd.Substring(4, 2)), int.Parse(cd.Substring(6, 2)));
             string filePath= $"{BasePath.TrimEnd('\\').TrimEnd('/')}\\";
             string workOrder;
+
             ////////////
             // 編輯區1//
             ////////////
-            if (projectId == 5541)
+            if (projectId == 4341)
+            {
+                /// <summary>
+                /// A7A 台大健康
+                /// <para>Project ID: 4341</para>
+                /// <para>工令: 1BA701</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1ba701";
+            }
+            else if (projectId == 4760)
+            {
+                /// <summary>
+                /// A8B 八德
+                /// <para>Project ID: 4760</para>
+                /// <para>工令: 1CA802</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1ca802";
+            }
+            else if (projectId == 4780)
+            {
+                /// <summary>
+                /// A8C 鳥嘴潭所
+                /// <para>Project ID: 4780</para>
+                /// <para>工令: 1CA803</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1ca803";
+            }
+            else if (projectId == 5320)
+            {
+                /// <summary>
+                /// B0A 新展
+                /// <para>Project ID: 5320</para>
+                /// <para>工令: 1CB001</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1cb001";
+            }
+            else if (projectId == 5460)
+            {
+                /// <summary>
+                /// A7A 台大健康
+                /// <para>Project ID: 5460</para>
+                /// <para>工令: 1BB006</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1bb006";
+            }
+            else if (projectId == 5520)
+            {
+                /// <summary>
+                /// A6E 大林蒲
+                /// <para>Project ID: 5520</para>
+                /// <para>工令: 1BB101</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1bb101";
+            }
+            else if (projectId == 5541)
             {
                 /// <summary>
                 /// A8F 大埔
@@ -35,25 +108,110 @@ namespace EDR_Report.Controllers
                 /// <returns></returns>
                 workOrder = "1cb102";
             }
-            else if (projectId == 4780)
+            else if (projectId == 5621)
             {
                 /// <summary>
-                /// A8C 鳥嘴潭工務所
-                /// <para>Project ID: 4780</para>
-                /// <para>工令: 1CA803</para>
+                /// B1C 寶科
+                /// <para>Project ID: 5621</para>
+                /// <para>工令: 1CB105</para>
                 /// </summary>
                 /// <param name="state"></param>
                 /// <param name="cd"></param>
                 /// <returns></returns>
-                workOrder = "1ca803";
+                workOrder = "1cb105";
             }
-            else{
+            else if (projectId == 5781)
+            {
+                /// <summary>
+                /// B1F 橋科
+                /// <para>Project ID: 5781</para>
+                /// <para>工令: 1CB110</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1cb110";
+            }
+            else if (projectId == 5782)
+            {
+                /// <summary>
+                /// A6E 大林蒲
+                /// <para>Project ID: 5782</para>
+                /// <para>工令: 1CB108</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1cb108";
+            }
+            else if (projectId == 5820)
+            {
+                /// <summary>
+                /// B1H 欣科
+                /// <para>Project ID: 5820</para>
+                /// <para>工令: 1CB111</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1cb111";
+            }
+            else if (projectId == 5900)
+            {
+                /// <summary>
+                /// B2A 通宵
+                /// <para>Project ID: 5900</para>
+                /// <para>工令: 1CB202</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1cb202";
+            }
+            else if (projectId == 6000)
+            {
+                /// <summary>
+                /// B2D 松湖工務所
+                /// <para>Project ID: 6000</para>
+                /// <para>工令: 1BB206</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1bb206";
+            }
+            else if (projectId == 6020)
+            {
+                /// <summary>
+                /// B1H 欣科
+                /// <para>Project ID: 6020</para>
+                /// <para>工令: 1CB207</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1cb207";
+            }
+            else if (projectId == 6040)
+            {
+                /// <summary>
+                /// B2D 博誠工務所
+                /// <para>Project ID: 6040</para>
+                /// <para>工令: 1CB208</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1cb208";
+            }
+            else
+            {
                 workOrder = "";
             }
-            filePath = String.Concat(filePath, $"edr{workOrder}.xlsx");
+
+            filePath = string.Concat(filePath, $"edr{workOrder}.xlsx");
             if (!System.IO.File.Exists(filePath)) filePath = $"report/edr{workOrder}.xlsx";
             if (!System.IO.File.Exists(filePath)) return NotFound("找不到套表檔");
-
 
             DBFunc db = new();
             // 讀入資料
@@ -193,25 +351,17 @@ namespace EDR_Report.Controllers
                 ////////////
                 // 編輯區3//
                 ////////////
-                if (projectId == 6040)
-                {// 依資料長度調整列數
-                    AdjustRowNums(ws, variables, "$co_col2$");
-                    AdjustRowNums(ws, variables, "$material_col2$");
-                    AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
-                    // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
-                    AdjustRowHeight(ws, variables, "$project_name$");
-                    AdjustRowHeight(ws, variables, "$co_col2$");
-                    AdjustRowHeight(ws, variables, "$material_col2$");
-                    AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
-                    AdjustRowHeight(ws, variables, "$note$");
-                    AdjustRowHeight(ws, variables, "$note_a$");
-                    AdjustRowHeight(ws, variables, "$note_b$");
-                    AdjustRowHeight(ws, variables, "$note_c$");
-                    AdjustRowHeight(ws, variables, "$note_d$");
-                    AdjustRowHeight(ws, variables, "$note_g$");
-                }
-                else if (projectId == 4780)
-                {// 依資料長度調整列數
+                if (projectId == 4780)
+                {
+                    /// <summary>
+                    /// A8C 鳥嘴潭所
+                    /// <para>Project ID: 4780</para>
+                    /// <para>工令: 1CA803</para>
+                    /// </summary>
+                    /// <param name="state"></param>
+                    /// <param name="cd"></param>
+                    /// <returns></returns>
+                    // 依資料長度調整列數
                     AdjustRowNums(ws, variables, "$co_col2$");
                     AdjustRowNums(ws, variables, "$material_col2$");
                     AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
@@ -225,8 +375,38 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_c$");
 
                 }
+                else if (projectId == 4760)
+                {
+                    /// <summary>
+                    /// A8B 八德
+                    /// <para>Project ID: 4760</para>
+                    /// <para>工令: 1CA802</para>
+                    /// </summary>
+                    /// <param name="state"></param>
+                    /// <param name="cd"></param>
+                    /// <returns></returns>
+                    AdjustRowNums(ws, variables, "$co_col2$");
+                    //AdjustRowNums(ws, variables, "$material_col2$");
+                    AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
+                    // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
+                    AdjustRowHeight(ws, variables, "$project_name$");
+                    AdjustRowHeight(ws, variables, "$co_col2$");
+                    //AdjustRowHeight(ws, variables, "$material_col2$");
+                    AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
+                    AdjustRowHeight(ws, variables, "$note_a$");
+                    AdjustRowHeight(ws, variables, "$note_c$");
+                    AdjustRowHeight(ws, variables, "$note_d$");
+                }
                 else if (projectId == 5541)
                 {
+                    /// <summary>
+                    /// A8F 大埔
+                    /// <para>Project ID: 5541</para>
+                    /// <para>工令: 1CB102</para>
+                    /// </summary>
+                    /// <param name="state"></param>
+                    /// <param name="cd"></param>
+                    /// <returns></returns>
                     AdjustRowNums(ws, variables, "$co_col2$");
                     AdjustRowNums(ws, variables, "$material_col2$");
                     AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
@@ -244,6 +424,14 @@ namespace EDR_Report.Controllers
                 }
                 else if (projectId == 5782)
                 {
+                    /// <summary>
+                    /// A6E 大林蒲
+                    /// <para>Project ID: 5782</para>
+                    /// <para>工令: 1CB108</para>
+                    /// </summary>
+                    /// <param name="state"></param>
+                    /// <param name="cd"></param>
+                    /// <returns></returns>
                     AdjustRowNums(ws, variables, "$co_col2$");
                     AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$", "$material_col2$");
                     // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
@@ -254,26 +442,46 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_c$");
                     AdjustRowHeight(ws, variables, "$note_d$");
                 }
-                else if (projectId == 4760)
-                {
-                    AdjustRowNums(ws, variables, "$co_col2$");
-                    //AdjustRowNums(ws, variables, "$material_col2$");
-                    AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
-                    // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
-                    AdjustRowHeight(ws, variables, "$project_name$");
-                    AdjustRowHeight(ws, variables, "$co_col2$");
-                    //AdjustRowHeight(ws, variables, "$material_col2$");
-                    AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
-                    AdjustRowHeight(ws, variables, "$note_a$");
-                    AdjustRowHeight(ws, variables, "$note_c$");
-                    AdjustRowHeight(ws, variables, "$note_d$");
-                }
                 else if (projectId == 6000)
                 {
+                    /// <summary>
+                    /// B2D 松湖工務所
+                    /// <para>Project ID: 6000</para>
+                    /// <para>工令: 1BB206</para>
+                    /// </summary>
+                    /// <param name="state"></param>
+                    /// <param name="cd"></param>
+                    /// <returns></returns>
                     //AdjustRowNumsAndHeight(ws, variables, "$period1$");
                     //AdjustRowNumsAndHeight(ws, variables, "$period5$");
                     //VerticalMergeRows(ws, "$period1$", new int[] { 1, 9, 17, 25 });
                     //VerticalMergeRows(ws, "$period5$", new int[] { 1, 9, 17, 25 });
+                }
+                else if (projectId == 6040)
+                {
+                    /// <summary>
+                    /// B2D 博誠工務所
+                    /// <para>Project ID: 6040</para>
+                    /// <para>工令: 1CB208</para>
+                    /// </summary>
+                    /// <param name="state"></param>
+                    /// <param name="cd"></param>
+                    /// <returns></returns>
+                    // 依資料長度調整列數
+                    AdjustRowNums(ws, variables, "$co_col2$");
+                    AdjustRowNums(ws, variables, "$material_col2$");
+                    AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
+                    // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
+                    AdjustRowHeight(ws, variables, "$project_name$");
+                    AdjustRowHeight(ws, variables, "$co_col2$");
+                    AdjustRowHeight(ws, variables, "$material_col2$");
+                    AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
+                    AdjustRowHeight(ws, variables, "$note$");
+                    AdjustRowHeight(ws, variables, "$note_a$");
+                    AdjustRowHeight(ws, variables, "$note_b$");
+                    AdjustRowHeight(ws, variables, "$note_c$");
+                    AdjustRowHeight(ws, variables, "$note_d$");
+                    AdjustRowHeight(ws, variables, "$note_g$");
                 }
 
                 // 替換資料

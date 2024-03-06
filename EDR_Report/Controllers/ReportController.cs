@@ -68,8 +68,8 @@ namespace EDR_Report.Controllers
                 ////////////
                 // 編輯區4//
                 ////////////
-                "1ca803" => RPTLAYOUT(state, cd),
-                "1cb102" => RPTLAYOUT(state, cd),
+                "1ca803" => RPTLAYOUT(state, cd), //4780(1CA803)鳥嘴潭工務所 烏溪鳥嘴潭人工湖工程...
+                "1cb102" => RPTLAYOUT(state, cd), //5541(1CB102)大埔工務所 曾文水庫放水渠道及擴...
                 _ => NotFound("錯誤的報表")
             };
         }
