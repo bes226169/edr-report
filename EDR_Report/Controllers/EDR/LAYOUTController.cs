@@ -253,18 +253,22 @@ namespace EDR_Report.Controllers
                 { "$calendar_date_t2$", projInfo["CALENDAR_DATE_T2"] },    // 112年01月01日(星期一)
                 { "$calendar_date_t3$", projInfo["CALENDAR_DATE_T3"] },    // 112年01月01日 星期一
                 { "$calendar_date$", projInfo["CALENDAR_DATE"] },
+                { "$calendar_date_weekday$", projInfo["CALENDAR_DATE_WEEKDAY"] },
                 { "$project_name$", projInfo["PROJECT_NAME"] },
                 { "$project_own_ch$", projInfo["PROJECT_OWN_CH"] },
                 { "$contractor$", projInfo["CONSTRUCTOR"]  },
                 { "$t_day$", projInfo["TDAY"] },                           //1,234天
+                { "$construction_period$", projInfo["CONSTRUCTION_PERIOD"]},
                 { "$s_day$", projInfo["SDAY"] },                           //1,234天
                 { "$v_day$", projInfo["VDAY"] },                           //1,234天
                 { "$t_day_t2$", projInfo["TDAY_T2"] },                     //1,234日曆天
                 { "$s_day_t2$", projInfo["SDAY_T2"] },                     //1,234日曆天
                 { "$v_day_t2$", projInfo["VDAY_T2"] },                     //1,234日曆天
                 { "$v_day_sub$", projInfo["VDAY_SUB"] },
+                { "$vday_sub_num$", projInfo["VDAY_SUB_NUM"] },
                 { "$spread_day$", projInfo["SPREAD_DAY"] },
                 { "$spread_day_t2$", projInfo["SPREAD_DAY_T2"] },
+                { "$spread_day_num$", projInfo["SPREAD_DAY_NUM"] },
                 { "$state_date$", projInfo["START_DATE"] },
                 { "$end_date$", projInfo["END_DATE"] },
                 { "$state_date_wkd$", projInfo["START_DATE_WKD"] },
@@ -273,6 +277,7 @@ namespace EDR_Report.Controllers
                 { "$exp_percent_t2$", projInfo["EXP_PERCENT_T2"] },
                 { "$act_sum$", projInfo["ACT_SUM"] },
                 { "$act_sum_t2$", projInfo["ACT_SUM_T2"] },
+                { "$diff_percent$",projInfo["DIFF_PERCENT"] },
                 { "$m50$", projInfo["M50"] },
                 { "$m51$", projInfo["M51"] },
                 { "$m52$", projInfo["M52"] },
@@ -291,6 +296,7 @@ namespace EDR_Report.Controllers
 
                 { "$co_col1$", projConsOverview["OWNITEM_NO"]},
                 { "$co_col2$", projConsOverview["NAME"]},
+                {"$construction_item$", projConsOverview["CONSTRUCTION_ITEM"]},
                 { "$co_col3$", projConsOverview["UNIT"]},
                 { "$co_col4$", projConsOverview["QUANTITY"]},
                 { "$co_col5$", projConsOverview["NOW_EDR_QUANTITY"]},
@@ -395,6 +401,20 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$co_col2$");
                     //AdjustRowHeight(ws, variables, "$material_col2$");
                     AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
+                    AdjustRowHeight(ws, variables, "$note_a$");
+                    AdjustRowHeight(ws, variables, "$note_c$");
+                    AdjustRowHeight(ws, variables, "$note_d$");
+                }
+                else if (projectId == 5520)
+                {
+
+                    AdjustRowNums(ws, variables, "$construction_item$");
+
+                    AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$", "$material_col2$");
+                    // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
+                    //AdjustRowHeight_1BB101(ws, variables, "$project_name$");
+                    AdjustRowHeight(ws, variables, "$construction_item$");
+                    AdjustRowHeight(ws, variables, "$machine_col1$", "$material_col2$");
                     AdjustRowHeight(ws, variables, "$note_a$");
                     AdjustRowHeight(ws, variables, "$note_c$");
                     AdjustRowHeight(ws, variables, "$note_d$");
@@ -515,7 +535,7 @@ namespace EDR_Report.Controllers
             public string? CALENDAR_DATE_T2 { get; set; }
             public string? CALENDAR_DATE_T3 { get; set; }
             public string? CALENDAR_DATE { get; set; }
-            public string? CALENDAR_DATE_WEKKDAY { get; set; }
+            public string? CALENDAR_DATE_WEEKDAY { get; set; }
             public string? WEATHER_AM { get; set; }
             public string? WEATHER_PM { get; set; }
             public string? WORK_HOUR { get; set; }
@@ -525,14 +545,18 @@ namespace EDR_Report.Controllers
             public string? ACT_PERCENT { get; set; }
             public string? ACT_SUM { get; set; }
             public string? ACT_SUM_T2 { get; set; }
+            public string? DIFF_PERCENT { get; set; }
             public string? NOCAL_DAY { get; set; }
             public string? EXTEND_DAY { get; set; }
             public string? SPREAD_DAY { get; set; }
             public string? SPREAD_DAY_T2 { get; set; }
+            public string? SPREAD_DAY_NUM { get; set; }
             public string? VDAY { get; set; }
             public string? VDAY_T2 { get; set; }
             public string? VDAY_SUB { get; set; }
+            public string? VDAY_SUB_NUM { get; set; }
             public string? TDAY { get; set; }
+            public string? CONSTRUCTION_PERIOD { get; set; }
             public string? TDAY_T2 { get; set; }
             public string? SDAY { get; set; }
             public string? SDAY_T2 { get; set; }
@@ -586,6 +610,7 @@ namespace EDR_Report.Controllers
         {
             public string? OWNITEM_NO { get; set; }
             public string? NAME { get; set; }
+            public string? CONSTRUCTION_ITEM { get; set; }
             public string? UNIT { get; set; }
             public string? QUANTITY { get; set; }
             public string? NOW_EDR_QUANTITY { get; set; }
@@ -700,10 +725,12 @@ namespace EDR_Report.Controllers
                 , NVL(NOTE.ACT_PERCENT, -1) AS ACT_PERCENT                                                              -- 本日實際進度
                 , TO_CHAR(NVL(NOTE.ACT_SUM, -1) * 100.0, 'FM999,999.0000') || '%' AS ACT_SUM                            -- 實際進度(%) (至本日累計實際進度)
                 , TO_CHAR(NVL(NOTE.ACT_SUM, -1) * 1.0, 'FM999,999.000') || '%' AS ACT_SUM_T2
+                , TO_CHAR(TO_NUMBER(NOTE.ACT_SUM) - TO_NUMBER(NOTE.EXP_PERCENT), 'FM9990.000') || '%' AS DIFF_PERCENT   -- 超前或落後(%)
                 , NVL(NOTE.NOCAL_DAY, -1) AS NOCAL_DAY                                                                  -- 免計工期(天)
                 , NVL(NOTE.EXTEND_DAY, -1) AS EXTEND_DAY                                                                -- 展延工期(天)
                 , TO_CHAR(NVL(PROJ.SPREAD_DAY, 0), 'FM999,999,999,999') || '天' AS SPREAD_DAY                           -- 展延天數
                 , TO_CHAR(NVL(PROJ.SPREAD_DAY, 0), 'FM999,999,999,999') || '日曆天' AS SPREAD_DAY_T2                    -- 展延天數
+                , TO_CHAR(NVL(PROJ.SPREAD_DAY, 0), 'FM999,999,999,999')  AS SPREAD_DAY_NUM                              -- 展延天數(純數字)
                 , TO_CHAR(NVL(PROJ.PROJ_SPREAD_DATE - 
                     TO_DATE(:calendarDateStr, 'yyyy/MM/dd'), 0), 'FM999,999,999,999') || '天' AS VDAY                   -- 剩餘工期
                 , TO_CHAR(NVL(PROJ.PROJ_SPREAD_DATE - 
@@ -711,8 +738,12 @@ namespace EDR_Report.Controllers
                 , TO_CHAR((PROJ.ORIGINAL_DAY - 
                     TO_NUMBER(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
                     PROJ.START_DATE + 1)), 'FM999,999,999,999') || '天' AS VDAY_SUB                                     -- 剩餘工期 核定減累計
+                , TO_CHAR((PROJ.ORIGINAL_DAY - 
+                    TO_NUMBER(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
+                    PROJ.START_DATE + 1)), 'FM999,999,999,999')  AS VDAY_SUB_NUM           -- 剩餘工期(純數字)
                 , TO_CHAR(NVL(PROJ.ORIGINAL_DAY, 0), 'FM999,999,999,999') || '天' AS TDAY                               -- 核定工期
                 , TO_CHAR(NVL(PROJ.ORIGINAL_DAY, 0), 'FM999,999,999,999') || '日曆天' AS TDAY_T2                        -- 核定工期
+                , TO_NUMBER(NVL(PROJ.ORIGINAL_DAY, 0)) + TO_NUMBER(NVL(PROJ.SPREAD_DAY, 0)) || '天' AS CONSTRUCTION_PERIOD  --工期
                 , TO_CHAR(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
                     PROJ.START_DATE + 1, 'FM999,999,999,999') || '天' AS SDAY                                           -- 累計工期
                 , TO_CHAR(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
@@ -858,6 +889,7 @@ namespace EDR_Report.Controllers
                       OWNITEM_NO
                     , NAME
                     , NVL(TRIM(UNIT), ' ') AS UNIT
+                    , OWNITEM_NO || '、' || NAME AS CONSTRUCTION_ITEM
                     , TO_CHAR(NVL(QUANTITY, NULL), 'FM999,999,999,999') AS QUANTITY
                     , TO_CHAR(NVL(NOW_EDR_QUANTITY, NULL), 'FM999,999,999,999') AS NOW_EDR_QUANTITY
                     , TO_CHAR(NVL(SUM_EDR_QUANTITY, NULL), 'FM999,999,999,999') AS SUM_EDR_QUANTITY
