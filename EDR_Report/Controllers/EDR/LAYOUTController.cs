@@ -206,6 +206,18 @@ namespace EDR_Report.Controllers
                 /// <returns></returns>
                 workOrder = "1cb208";
             }
+            else if (projectId == 5780)
+            {
+                /// <summary>
+                /// B1E 華桂聯合工務所
+                /// <para>Project ID: 5780</para>
+                /// <para>工令: 1CB109/para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1cb109";
+            }
             else
             {
                 workOrder = "";
@@ -443,6 +455,7 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_a$");
                     AdjustRowHeight(ws, variables, "$note_c$");
                     AdjustRowHeight(ws, variables, "$note_d$");
+                    AdjustRowHeight(ws, variables, "$note_f$");
                 }
                 else if (projectId == 6000)
                 {
@@ -484,6 +497,30 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_c$");
                     AdjustRowHeight(ws, variables, "$note_d$");
                     AdjustRowHeight(ws, variables, "$note_g$");
+                }
+                else if (projectId == 5780)
+                {
+                    /// <summary>
+                    /// B1E 華桂聯合工務所
+                    /// <para>Project ID: 5780</para>
+                    /// <para>工令: 1CB109</para>
+                    /// </summary>
+                    /// <param name="state"></param>
+                    /// <param name="cd"></param>
+                    /// <returns></returns>
+                    // 依資料長度調整列數
+                    AdjustRowNums(ws, variables, "$material_col2$");
+                    AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
+                    // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
+                    AdjustRowHeight(ws, variables, "$project_name$");
+                    AdjustRowHeight(ws, variables, "$material_col2$");
+                    AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
+                    AdjustRowHeight(ws, variables, "$note$");
+                    AdjustRowHeight(ws, variables, "$note_a$");
+                    AdjustRowHeight(ws, variables, "$note_b$");
+                    AdjustRowHeight(ws, variables, "$note_c$");
+                    AdjustRowHeight(ws, variables, "$note_g$");
+                    AdjustRowHeight(ws, variables, "$note_f$");
                 }
 
                 // 替換資料
