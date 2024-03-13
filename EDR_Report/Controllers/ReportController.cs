@@ -70,6 +70,7 @@ namespace EDR_Report.Controllers
                 ////////////
                 "1ca803" => RPTLAYOUT(state, cd), //4780(1CA803)鳥嘴潭工務所 烏溪鳥嘴潭人工湖工程...
                 "1cb102" => RPTLAYOUT(state, cd), //5541(1CB102)大埔工務所 曾文水庫放水渠道及擴...
+                "1ca802" => RPTLAYOUT(state, cd), //4760(1CA802)八德工務所 
                 "1bb101" => RPTLAYOUT(state, cd), //5520(1CB102)大林蒲工務所 森霸二期
                 "1cb109" => RPTLAYOUT(state, cd), //5780(1CB109)華桂聯合工務所 鳥嘴潭淨水場新建統包工程(續) 
                 _ => NotFound("錯誤的報表")
