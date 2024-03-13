@@ -271,3 +271,5 @@ C:\Users\226178\Desktop\GitHub\edr-report\EDR_Report\obj\Debug\net6.0\refint\EDR
 C:\Users\226178\Desktop\GitHub\edr-report\EDR_Report\obj\Debug\net6.0\EDR_Report.pdb
 C:\Users\226178\Desktop\GitHub\edr-report\EDR_Report\obj\Debug\net6.0\EDR_Report.genruntimeconfig.cache
 C:\Users\226178\Desktop\GitHub\edr-report\EDR_Report\obj\Debug\net6.0\ref\EDR_Report.dll
+C:\Users\226178\Desktop\GitHub\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1bb101.xlsx
+C:\Users\226178\Desktop\GitHub\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb109.xlsx
