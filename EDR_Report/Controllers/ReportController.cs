@@ -73,6 +73,7 @@ namespace EDR_Report.Controllers
                 "1ca802" => RPTLAYOUT(state, cd), //4760(1CA802)八德工務所 
                 "1bb101" => RPTLAYOUT(state, cd), //5520(1CB102)大林蒲工務所 森霸二期
                 "1cb109" => RPTLAYOUT(state, cd), //5780(1CB109)華桂聯合工務所 鳥嘴潭淨水場新建統包工程(續) 
+                "1cb208" => RPTLAYOUT(state, cd), //6040(1CB208)博誠工務所 高雄新市鎮1-1、1...
                 _ => NotFound("錯誤的報表")
             };
         }
