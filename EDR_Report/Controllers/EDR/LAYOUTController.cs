@@ -371,7 +371,7 @@ namespace EDR_Report.Controllers
                 // 讀取xlsx檔案
                 wb = new XSSFWorkbook(fileStream);
                 ISheet ws = wb.GetSheetAt(0);
-
+                ISheet ws2 = wb.GetSheetAt(1);
                 ////////////
                 // 編輯區3//
                 ////////////
@@ -535,6 +535,7 @@ namespace EDR_Report.Controllers
                     // 依資料長度調整列數
                     AdjustRowNums(ws, variables, "$material_col2$");
                     AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
+                    AdjustRowNums(ws2, variables, "$co_col1$");
                     // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
                     AdjustRowHeight(ws, variables, "$project_name$");
                     AdjustRowHeight(ws, variables, "$material_col2$");
@@ -543,12 +544,16 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_a$");
                     AdjustRowHeight(ws, variables, "$note_b$");
                     AdjustRowHeight(ws, variables, "$note_c$");
-                    AdjustRowHeight(ws, variables, "$note_g$");
                     AdjustRowHeight(ws, variables, "$note_f$");
+                    
+                    //var row = ws2.GetRow(0);
+                    //    var cell=row.GetCell(0);
+                    //cell.SetCellValue("asdfghjk");
                 }
 
                 // 替換資料
                 ImportDataIntoPlaceholder(ws, variables);
+                ImportDataIntoPlaceholder(ws2, variables);
             }
             // 不留實體檔案，直接串流到前端
             using var ms = new MemoryStream();
