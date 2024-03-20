@@ -484,36 +484,22 @@ namespace EDR_Report.Controllers
                     /// <param name="state"></param>
                     /// <param name="cd"></param>
                     /// <returns></returns>
+                    ISheet ws2 = wb.GetSheetAt(1);
                     // 依資料長度調整列數
-                    //AdjustRowNums(ws, variables, "$material_col2$");
-                    //AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
-                    //// 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
-                    //AdjustRowHeight(ws, variables, "$project_name$");
-                    //AdjustRowHeight(ws, variables, "$material_col2$");
-                    //AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
-                    //AdjustRowHeight(ws, variables, "$note$");
-                    //AdjustRowHeight(ws, variables, "$note_a$");
-                    //AdjustRowHeight(ws, variables, "$note_b$");
-                    //AdjustRowHeight(ws, variables, "$note_c$");
-                    //AdjustRowHeight(ws, variables, "$note_g$");
+                    AdjustRowNums(ws, variables, "$material_col2$");
+                    AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
+                    AdjustRowNums(ws2, variables, "$co_col1$");
+                    // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
+                    AdjustRowHeight(ws, variables, "$project_name$");
+                    AdjustRowHeight(ws, variables, "$material_col2$");
+                    AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
+                    AdjustRowHeight(ws, variables, "$note$");
+                    AdjustRowHeight(ws, variables, "$note_a$");
+                    AdjustRowHeight(ws, variables, "$note_b$");
+                    AdjustRowHeight(ws, variables, "$note_c$");
                     AdjustRowHeight(ws, variables, "$note_f$");
-                    //AdjustRowNums(ws2, variables, "$material_col2$");
-                    //AdjustRowNums(ws2, variables, "$man_col1$", "$machine_col1$");
-                    //// 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
-                    //AdjustRowHeight(ws2, variables, "$project_name$");
-                    //AdjustRowHeight(ws2, variables, "$material_col2$");
-                    //AdjustRowHeight(ws2, variables, "$man_col1$", "$machine_col1$");
-                    //AdjustRowHeight(ws2, variables, "$note$");
-                    //AdjustRowHeight(ws2, variables, "$note_a$");
-                    //AdjustRowHeight(ws2, variables, "$note_b$");
-                    //AdjustRowHeight(ws2, variables, "$note_c$");
-                    //AdjustRowHeight(ws2, variables, "$note_g$");
-                    //AdjustRowHeight(ws2, variables, "$note_f$");
-                    //AdjustRowHeight(ws2, variables, "$note_f$");
-                    //var row=ws2.GetRow(0);
-                    //var cell=row.GetCell(0);
-                    //cell.SetCellValue("TEST");
-
+                    AdjustRowHeight(ws2, variables, "$co_col1$");
+                    ImportDataIntoPlaceholder(ws2, variables);
                 }
                 else if (projectId == 5782)
                 {
@@ -577,33 +563,6 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_d$");
                     AdjustRowHeight(ws, variables, "$note_g$");
                 }
-
-                else if (projectId == 5780)
-                {
-                    /// <summary>
-                    /// B1E 華桂聯合工務所
-                    /// <para>Project ID: 5780</para>
-                    /// <para>工令: 1CB109</para>
-                    /// </summary>
-                    /// <param name="state"></param>
-                    /// <param name="cd"></param>
-                    /// <returns></returns>
-                    // 依資料長度調整列數
-                    AdjustRowNums(ws, variables, "$material_col2$");
-                    AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
-                    AdjustRowNums(ws2, variables, "$co_col1$");
-                    // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
-                    AdjustRowHeight(ws, variables, "$project_name$");
-                    AdjustRowHeight(ws, variables, "$material_col2$");
-                    AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
-                    AdjustRowHeight(ws, variables, "$note$");
-                    AdjustRowHeight(ws, variables, "$note_a$");
-                    AdjustRowHeight(ws, variables, "$note_b$");
-                    AdjustRowHeight(ws, variables, "$note_c$");
-                    AdjustRowHeight(ws, variables, "$note_f$");
-                    
-                }
-
                 // 替換資料
                 ImportDataIntoPlaceholder(ws, variables);
             }
@@ -1335,15 +1294,15 @@ namespace EDR_Report.Controllers
         static int[,] GetCellIndexByPlaceholder(ISheet sheet, string placeholder)
         {
             List<int[]> indexesList = new();
-        
+
             for (int rowIndex = 0; rowIndex < sheet.LastRowNum; rowIndex++)
             {
-              
+
                 IRow row = sheet.GetRow(rowIndex);
                 for (int colIndex = 0; colIndex < row.LastCellNum; colIndex++)
                 {
                     ICell cell = row.GetCell(colIndex);
-                   
+
                     if (cell != null && cell.CellType == CellType.String && cell.StringCellValue == placeholder)
                     {
                         int[] indexes = new int[] { rowIndex + 1, colIndex + 1 };
