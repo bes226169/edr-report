@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.AspNetCore.Mvc;
+using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
@@ -120,6 +121,18 @@ namespace EDR_Report.Controllers
                 /// <returns></returns>
                 workOrder = "1cb105";
             }
+            else if (projectId == 5780)
+            {
+                /// <summary>
+                /// B1E 華桂聯合工務所
+                /// <para>Project ID: 5780</para>
+                /// <para>工令: 1CB109/para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1cb109";
+            }
             else if (projectId == 5781)
             {
                 /// <summary>
@@ -204,18 +217,6 @@ namespace EDR_Report.Controllers
                 /// <returns></returns>
                 workOrder = "1cb208";
             }
-            else if (projectId == 5780)
-            {
-                /// <summary>
-                /// B1E 華桂聯合工務所
-                /// <para>Project ID: 5780</para>
-                /// <para>工令: 1CB109/para>
-                /// </summary>
-                /// <param name="state"></param>
-                /// <param name="cd"></param>
-                /// <returns></returns>
-                workOrder = "1cb109";
-            }
             else
             {
                 workOrder = "";
@@ -231,21 +232,33 @@ namespace EDR_Report.Controllers
             // 編輯區2//
             ////////////
             var projInfo = GetProjInfo(db, projectId, calendarDate);
-            var projConsOverview = GetProjConsOverview(db, projectId, calendarDate, myuserId, state, false);
-            if (projectId == 6040 || projectId == 5541 || projectId == 5782 || projectId == 4760)
+            var projConsOverview = projectId switch
             {
-                projConsOverview = GetProjConsOverview(db, projectId, calendarDate, myuserId, "1", false); //1:所有,2:本日
-            }
-            var projConsOverviewSpec = GetProjConsOverview(db, projectId, calendarDate, myuserId, state, true);
-            var projMaterial = GetProjManMachineMaterial(db, projectId, calendarDate, "2", "material"); //1:所有,2:本日
-            var projMan = GetProjManMachineMaterial(db, projectId, calendarDate, "2", "man"); //1:所有,2:本日
-            var projMachine = GetProjManMachineMaterial(db, projectId, calendarDate, "2", "machine"); //1:所有,2:本日
-            if (projectId == 5782)
+                6040 => GetProjConsOverview(db, projectId, calendarDate, myuserId, "1", false), // 1:所有, 2:本日
+                5541 => GetProjConsOverview(db, projectId, calendarDate, myuserId, "1", false),
+                5782 => GetProjConsOverview(db, projectId, calendarDate, myuserId, "1", false),
+                4760 => GetProjConsOverview(db, projectId, calendarDate, myuserId, "1", false),
+                _ => GetProjConsOverview(db, projectId, calendarDate, myuserId, state, false)
+            };
+            //var projConsOverviewSpec = GetProjConsOverview(db, projectId, calendarDate, myuserId, state, true);
+            var projMan = projectId switch
             {
-                projMaterial = GetProjManMachineMaterial(db, projectId, calendarDate, "1", "material"); //1:所有,2:本日
-                projMan = GetProjManMachineMaterial(db, projectId, calendarDate, "1", "man"); //1:所有,2:本日
-                projMachine = GetProjManMachineMaterial(db, projectId, calendarDate, "1", "machine"); //1:所有,2:本日
-            }
+                5782 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "man"), //1:所有使用,2:本日使用,3:所有項目
+                6040 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "man"), //1:所有使用,2:本日使用,3:所有項目
+                _ => GetProjManMachineMaterial(db, projectId, calendarDate, "2", "man") //1:所有使用,2:本日使用,3:所有項目
+            };
+            var projMachine = projectId switch
+            {
+                5782 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "machine"), //1:所有使用,2:本日使用,3:所有項目
+                6040 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "machine"), //1:所有使用,2:本日使用,3:所有項目
+                _ => GetProjManMachineMaterial(db, projectId, calendarDate, "2", "machine") //1:所有使用,2:本日使用,3:所有項目
+            };
+            var projMaterial = projectId switch
+            {
+                5782 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "material"), //1:所有使用,2:本日使用,3:所有項目
+                6040 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "material"), //1:所有使用,2:本日使用,3:所有項目
+                _ => GetProjManMachineMaterial(db, projectId, calendarDate, "2", "material") //1:所有使用,2:本日使用,3:所有項目
+            };
             var projNote = GetProjNote(db, projectId, calendarDate);
             var projMilestone = GetProjMilestone(db, projectId);
             // 待確認資料來源
@@ -325,18 +338,18 @@ namespace EDR_Report.Controllers
                 { "$co_col6_4d$", projConsOverview["SUM_EDR_QUANTITY_4DECI"]},
                 //{ "$co_col7$", projConsOverview["REMARK"]},
 
-                { "$cos_col1$", projConsOverviewSpec["OWNITEM_NO"]},
-                { "$cos_col2$", projConsOverviewSpec["NAME"]},
-                { "$cos_col3$", projConsOverviewSpec["UNIT"]},
-                { "$cos_col4$", projConsOverviewSpec["QUANTITY"]},
-                { "$cos_col5$", projConsOverviewSpec["NOW_EDR_QUANTITY"]},
-                { "$cos_col6$", projConsOverviewSpec["SUM_EDR_QUANTITY"]},
+                //{ "$cos_col1$", projConsOverviewSpec["OWNITEM_NO"]},
+                //{ "$cos_col2$", projConsOverviewSpec["NAME"]},
+                //{ "$cos_col3$", projConsOverviewSpec["UNIT"]},
+                //{ "$cos_col4$", projConsOverviewSpec["QUANTITY"]},
+                //{ "$cos_col5$", projConsOverviewSpec["NOW_EDR_QUANTITY"]},
+                //{ "$cos_col6$", projConsOverviewSpec["SUM_EDR_QUANTITY"]},
                 //{ "$cos_col7$", projConsOverviewSpec["REMARK"]},
 
-                { "$material_col1$", projMaterial["ROW_NUMBER"]},
+                { "$material_col1$", projMaterial["SEQUENCE_NO"]},
                 { "$material_col2$", projMaterial["NAME"]},
                 { "$material_col3$", projMaterial["UNIT"]},
-                //{ "$material_col4$", projMaterial["QUANTITY"]},
+                { "$material_col4$", projMaterial["QUANTITY"]},
                 { "$material_col5$", projMaterial["TODAY_QTY"]},
                 { "$material_col6$", projMaterial["SUM_QTY"]},
                 { "$material_col5_2d$", projMaterial["TODAY_QTY_2DECI"]},
@@ -371,7 +384,7 @@ namespace EDR_Report.Controllers
                 // 讀取xlsx檔案
                 wb = new XSSFWorkbook(fileStream);
                 ISheet ws = wb.GetSheetAt(0);
-                ISheet ws2 = wb.GetSheetAt(1);
+
                 ////////////
                 // 編輯區3//
                 ////////////
@@ -417,9 +430,10 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$co_col2$");
                     //AdjustRowHeight(ws, variables, "$material_col2$");
                     AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
+                    AdjustRowHeight(ws, variables, "$note$");
                     AdjustRowHeight(ws, variables, "$note_a$");
                     AdjustRowHeight(ws, variables, "$note_c$");
-                    AdjustRowHeight(ws, variables, "$note_d$");
+                    //AdjustRowHeight(ws, variables, "$note_d$");
                 }
                 else if (projectId == 5520)
                 {
@@ -459,6 +473,47 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_c$");
                     AdjustRowHeight(ws, variables, "$note_d$");
                     AdjustRowHeight(ws, variables, "$note_g$");
+                }
+                else if (projectId == 5780)
+                {
+                    /// <summary>
+                    /// B1E 華桂聯合工務所
+                    /// <para>Project ID: 5780</para>
+                    /// <para>工令: 1CB109</para>
+                    /// </summary>
+                    /// <param name="state"></param>
+                    /// <param name="cd"></param>
+                    /// <returns></returns>
+                    // 依資料長度調整列數
+                    //AdjustRowNums(ws, variables, "$material_col2$");
+                    //AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
+                    //// 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
+                    //AdjustRowHeight(ws, variables, "$project_name$");
+                    //AdjustRowHeight(ws, variables, "$material_col2$");
+                    //AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
+                    //AdjustRowHeight(ws, variables, "$note$");
+                    //AdjustRowHeight(ws, variables, "$note_a$");
+                    //AdjustRowHeight(ws, variables, "$note_b$");
+                    //AdjustRowHeight(ws, variables, "$note_c$");
+                    //AdjustRowHeight(ws, variables, "$note_g$");
+                    AdjustRowHeight(ws, variables, "$note_f$");
+                    //AdjustRowNums(ws2, variables, "$material_col2$");
+                    //AdjustRowNums(ws2, variables, "$man_col1$", "$machine_col1$");
+                    //// 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
+                    //AdjustRowHeight(ws2, variables, "$project_name$");
+                    //AdjustRowHeight(ws2, variables, "$material_col2$");
+                    //AdjustRowHeight(ws2, variables, "$man_col1$", "$machine_col1$");
+                    //AdjustRowHeight(ws2, variables, "$note$");
+                    //AdjustRowHeight(ws2, variables, "$note_a$");
+                    //AdjustRowHeight(ws2, variables, "$note_b$");
+                    //AdjustRowHeight(ws2, variables, "$note_c$");
+                    //AdjustRowHeight(ws2, variables, "$note_g$");
+                    //AdjustRowHeight(ws2, variables, "$note_f$");
+                    //AdjustRowHeight(ws2, variables, "$note_f$");
+                    //var row=ws2.GetRow(0);
+                    //var cell=row.GetCell(0);
+                    //cell.SetCellValue("TEST");
+
                 }
                 else if (projectId == 5782)
                 {
@@ -522,6 +577,7 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_d$");
                     AdjustRowHeight(ws, variables, "$note_g$");
                 }
+
                 else if (projectId == 5780)
                 {
                     /// <summary>
@@ -546,14 +602,10 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_c$");
                     AdjustRowHeight(ws, variables, "$note_f$");
                     
-                    //var row = ws2.GetRow(0);
-                    //    var cell=row.GetCell(0);
-                    //cell.SetCellValue("asdfghjk");
                 }
 
                 // 替換資料
                 ImportDataIntoPlaceholder(ws, variables);
-                ImportDataIntoPlaceholder(ws2, variables);
             }
             // 不留實體檔案，直接串流到前端
             using var ms = new MemoryStream();
@@ -630,15 +682,19 @@ namespace EDR_Report.Controllers
         {
             public string? PROJECT_ID { get; set; }
             public string? RESOURCE_CLASS { get; set; }
-            public string? PBG_CODE { get; set; }
+            public string? RESOURCE_ID { get; set; }
             public string? SEQUENCE_NO { get; set; }
-            public string? ROW_NUMBER { get; set; }
+            public string? PBG_CODE { get; set; }
+            public string? COST_CODE { get; set; }
             public string? NAME { get; set; }
             public string? UNIT { get; set; }
+            public string? UNIT_PRICE { get; set; }
+            public string? QUANTITY { get; set; }
             public string? TODAY_QTY { get; set; }
             public string? SUM_QTY { get; set; }
             public string? TODAY_QTY_2DECI { get; set; }
             public string? SUM_QTY_2DECI { get; set; }
+            public string? FILTER_ID { get; set; }
         }
         public class PROJECT_NOTE_MODEL
         {
@@ -663,8 +719,10 @@ namespace EDR_Report.Controllers
         {
             public string? OWNITEM_NO { get; set; }
             public string? NAME { get; set; }
-            public string? CONSTRUCTION_ITEM { get; set; }
             public string? UNIT { get; set; }
+            public string? CONSTRUCTION_ITEM { get; set; }
+            public string? OWN_CODE { get; set; }
+            public string? OWN_CONTROL_ITEM { get; set; }
             public string? QUANTITY { get; set; }
             public string? NOW_EDR_QUANTITY { get; set; }
             public string? SUM_EDR_QUANTITY { get; set; }
@@ -945,14 +1003,17 @@ namespace EDR_Report.Controllers
                 query3_ = "";
             }
             string query3 = $@"
-                SELECT 
+                 SELECT 
                       OWNITEM_NO
                     , NAME
                     , NVL(TRIM(UNIT), ' ') AS UNIT
                     , OWNITEM_NO || '、' || NAME AS CONSTRUCTION_ITEM
+                    , OWN_CODE
+                    , OWN_CONTROL_ITEM
                     , TO_CHAR(NVL(QUANTITY, NULL), 'FM999,999,999,999') AS QUANTITY
                     , TO_CHAR(NVL(NOW_EDR_QUANTITY, NULL), 'FM999,999,999,999') AS NOW_EDR_QUANTITY
                     , TO_CHAR(NVL(SUM_EDR_QUANTITY, NULL), 'FM999,999,999,999') AS SUM_EDR_QUANTITY
+
                     , CASE WHEN QUANTITY = 0 THEN '-' 
                         ELSE TO_CHAR(NVL(QUANTITY, NULL), 'FM999,999,999,990.00') 
                         END AS QUANTITY_2DECI
@@ -962,6 +1023,7 @@ namespace EDR_Report.Controllers
                     , CASE WHEN SUM_EDR_QUANTITY = 0 THEN '-'
                         ELSE TO_CHAR(NVL(SUM_EDR_QUANTITY, NULL), 'FM999,999,999,990.00') 
                         END AS SUM_EDR_QUANTITY_2DECI
+
                     , CASE WHEN QUANTITY = 0 THEN '-' 
                         ELSE TO_CHAR(NVL(QUANTITY, NULL), 'FM999,999,999,990.0000') 
                         END AS QUANTITY_4DECI
@@ -971,10 +1033,24 @@ namespace EDR_Report.Controllers
                     , CASE WHEN SUM_EDR_QUANTITY = 0 THEN '-'
                         ELSE TO_CHAR(NVL(SUM_EDR_QUANTITY, NULL), 'FM999,999,999,990.0000') 
                         END AS SUM_EDR_QUANTITY_4DECI
+                FROM (
+                SELECT
+                      OWNITEM_NO
+                    , NAME
+                    , UNIT
+                    , CASE WHEN OWN_CONTROL_ITEM = 'S' THEN 0 ELSE QUANTITY END AS QUANTITY
+                    , CASE WHEN OWN_CONTROL_ITEM = 'S' THEN 0 ELSE NOW_EDR_QUANTITY END AS NOW_EDR_QUANTITY
+                    , CASE WHEN OWN_CONTROL_ITEM = 'S' THEN 0 ELSE SUM_EDR_QUANTITY END AS SUM_EDR_QUANTITY
+                    , OWN_CODE
+                    , PROJECT_ID
+                    , CREATED_BY
+                    , OWN_CONTROL_ITEM
                 FROM VSUSER.BES_EDR_TEMP_QUANTITY
+                )
                 WHERE PROJECT_ID = {projectId}
                 AND CREATED_BY = {myuserId}
                 --AND ROWNUM <= 10
+                ORDER BY OWN_CODE
                 {query3_}
                 ";
             var list = db.query<PROJECT_CONSTRUCTION_OVERVIEW_MODEL>("edr", query3).ToList();
@@ -1000,53 +1076,89 @@ namespace EDR_Report.Controllers
             {
                 resourceClass = "";
             }
-            string queryRange;
+            string filterId;
             if (state == "1")
             {
-                queryRange = ">= 0";
+                filterId ="('1', '2')";
             }
             else if (state == "2")
             {
-                queryRange = "> 0";
+                filterId ="('2')";
+            }
+            else if (state == "3")
+            {
+                filterId ="('1', '2', '3')";
             }
             else
             {
-                queryRange = "";
+                filterId = "";
             }
             var list = db.query<PROJECT_MMM_MODEL>("edr", $@"
-                SELECT       
-                      PROJECT_ID
+                SELECT
+                    PROJECT_ID
                     , RESOURCE_CLASS
-                    , OWN_RES_CODE AS PBG_CODE
+                    , RESOURCE_ID
                     , SEQUENCE_NO
-                    , ROW_NUMBER() OVER (ORDER BY OWN_RES_CODE) AS ROW_NUMBER
-                    , MAX(NAME) AS NAME
-                    , TRIM(MAX(UNIT)) AS UNIT
-                    , TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
-                        THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,999') AS TODAY_QTY
-                    , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
-                        THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,999') AS SUM_QTY
-                    , TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
-                        THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.00') AS TODAY_QTY_2DECI
-                    , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
-                        THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.00') AS SUM_QTY_2DECI
+                    , PBG_CODE
+                    , COST_CODE
+                    , NAME
+                    , UNIT
+                    , UNIT_PRICE
+                    , TO_CHAR(QUANTITY, 'FM999,999,999,999') AS QUANTITY
+                    , TODAY_QTY
+                    , SUM_QTY
+                    , FILTER_ID --1:所有,2:本日,3:歷史所有
                 FROM (
-                    SELECT a.*, b.SEQUENCE_NO FROM vsuser.bes_edr_resqty_v a
-                    LEFT JOIN (
-                        SELECT 
-                              RESOURCE_ID
-                            , SEQUENCE_NO 
-                        FROM vsuser.bes_project_resources
-                        WHERE SEQUENCE_NO IS NOT NULL
-                        ) b
-                    ON a.RESOURCE_ID=b.RESOURCE_ID
-                    WHERE RESOURCE_CLASS IN {resourceClass} --2:人,3,5:機,4:料
-                    AND PROJECT_ID = :projectId 
-                    AND QUANTITY >= 0
+                SELECT 
+                    a.PROJECT_ID
+                    , a.RESOURCE_CLASS
+                    , a.RESOURCE_ID
+                    , a.SEQUENCE_NO
+                    , a.PBG_CODE
+                    , a.COST_CODE
+                    , TRIM(a.NAME) AS NAME
+                    , TRIM(b.NAME) AS UNIT
+                    , a.UNIT_PRICE
+                    , a.QUANTITY
+                    , NVL(c.TODAY_QTY, '0') AS TODAY_QTY
+                    , NVL(c.SUM_QTY, '0') AS SUM_QTY
+                    , NVL(FILTER_ID, '3') AS FILTER_ID --1:所有,2:本日,3:歷史所有
+                FROM vsuser.BES_PROJECT_RESOURCES a
+                LEFT JOIN (SELECT UOM_ID, NAME FROM vsuser.VS_UOMS) b
+                ON a.UOM_ID=b.UOM_ID
+                LEFT JOIN(
+                SELECT
+                    PROJECT_ID
+                    , RESOURCE_CLASS
+                    , RESOURCE_ID
+                    , TODAY_QTY
+                    , SUM_QTY
+                    , CASE WHEN TODAY_QTY='0' THEN '1' ELSE '2' END AS FILTER_ID
+                FROM (
+                    SELECT       
+                        PROJECT_ID
+                        , RESOURCE_CLASS
+                        , RESOURCE_ID
+                        , TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
+                            THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,999') AS TODAY_QTY
+                        , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
+                            THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,999') AS SUM_QTY
+                        , TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
+                            THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.00') AS TODAY_QTY_2DECI
+                        , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
+                            THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.00') AS SUM_QTY_2DECI
+                    FROM vsuser.bes_edr_resqty_v 
+                    GROUP BY PROJECT_ID, RESOURCE_CLASS, RESOURCE_ID
                     )
-                GROUP BY PROJECT_ID, RESOURCE_CLASS, OWN_RES_CODE, SEQUENCE_NO
-                HAVING SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN NVL(QUANTITY, 0) ELSE 0 END) {queryRange}
-                ORDER BY RESOURCE_CLASS, SEQUENCE_NO
+                )c
+                ON a.PROJECT_ID=c.PROJECT_ID 
+                AND a.RESOURCE_CLASS=c.RESOURCE_CLASS 
+                AND a.RESOURCE_ID=c.RESOURCE_ID
+                WHERE a.PROJECT_ID = :projectId
+                )
+                WHERE RESOURCE_CLASS IN {resourceClass} --2:人,3,5:機,4:料
+                AND FILTER_ID IN {filterId}
+                ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
                 ", new
             {
                 projectId,
@@ -1223,12 +1335,15 @@ namespace EDR_Report.Controllers
         static int[,] GetCellIndexByPlaceholder(ISheet sheet, string placeholder)
         {
             List<int[]> indexesList = new();
+        
             for (int rowIndex = 0; rowIndex < sheet.LastRowNum; rowIndex++)
             {
+              
                 IRow row = sheet.GetRow(rowIndex);
                 for (int colIndex = 0; colIndex < row.LastCellNum; colIndex++)
                 {
                     ICell cell = row.GetCell(colIndex);
+                   
                     if (cell != null && cell.CellType == CellType.String && cell.StringCellValue == placeholder)
                     {
                         int[] indexes = new int[] { rowIndex + 1, colIndex + 1 };
