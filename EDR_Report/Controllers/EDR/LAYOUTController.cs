@@ -121,6 +121,18 @@ namespace EDR_Report.Controllers
                 /// <returns></returns>
                 workOrder = "1cb105";
             }
+            else if (projectId == 5780)
+            {
+                /// <summary>
+                /// B1E 華桂聯合工務所
+                /// <para>Project ID: 5780</para>
+                /// <para>工令: 1CB109/para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1cb109";
+            }
             else if (projectId == 5781)
             {
                 /// <summary>
@@ -205,18 +217,6 @@ namespace EDR_Report.Controllers
                 /// <returns></returns>
                 workOrder = "1cb208";
             }
-            else if (projectId == 5780)
-            {
-                /// <summary>
-                /// B1E 華桂聯合工務所
-                /// <para>Project ID: 5780</para>
-                /// <para>工令: 1CB109/para>
-                /// </summary>
-                /// <param name="state"></param>
-                /// <param name="cd"></param>
-                /// <returns></returns>
-                workOrder = "1cb109";
-            }
             else
             {
                 workOrder = "";
@@ -240,7 +240,7 @@ namespace EDR_Report.Controllers
                 4760 => GetProjConsOverview(db, projectId, calendarDate, myuserId, "1", false),
                 _ => GetProjConsOverview(db, projectId, calendarDate, myuserId, state, false)
             };
-            var projConsOverviewSpec = GetProjConsOverview(db, projectId, calendarDate, myuserId, state, true);
+            //var projConsOverviewSpec = GetProjConsOverview(db, projectId, calendarDate, myuserId, state, true);
             var projMan = projectId switch
             {
                 5782 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "man"), //1:所有使用,2:本日使用,3:所有項目
@@ -338,12 +338,12 @@ namespace EDR_Report.Controllers
                 { "$co_col6_4d$", projConsOverview["SUM_EDR_QUANTITY_4DECI"]},
                 //{ "$co_col7$", projConsOverview["REMARK"]},
 
-                { "$cos_col1$", projConsOverviewSpec["OWNITEM_NO"]},
-                { "$cos_col2$", projConsOverviewSpec["NAME"]},
-                { "$cos_col3$", projConsOverviewSpec["UNIT"]},
-                { "$cos_col4$", projConsOverviewSpec["QUANTITY"]},
-                { "$cos_col5$", projConsOverviewSpec["NOW_EDR_QUANTITY"]},
-                { "$cos_col6$", projConsOverviewSpec["SUM_EDR_QUANTITY"]},
+                //{ "$cos_col1$", projConsOverviewSpec["OWNITEM_NO"]},
+                //{ "$cos_col2$", projConsOverviewSpec["NAME"]},
+                //{ "$cos_col3$", projConsOverviewSpec["UNIT"]},
+                //{ "$cos_col4$", projConsOverviewSpec["QUANTITY"]},
+                //{ "$cos_col5$", projConsOverviewSpec["NOW_EDR_QUANTITY"]},
+                //{ "$cos_col6$", projConsOverviewSpec["SUM_EDR_QUANTITY"]},
                 //{ "$cos_col7$", projConsOverviewSpec["REMARK"]},
 
                 { "$material_col1$", projMaterial["SEQUENCE_NO"]},
@@ -384,7 +384,7 @@ namespace EDR_Report.Controllers
                 // 讀取xlsx檔案
                 wb = new XSSFWorkbook(fileStream);
                 ISheet ws = wb.GetSheetAt(0);
-
+                //ISheet ws2 = wb.GetSheetAt(1);
                 ////////////
                 // 編輯區3//
                 ////////////
@@ -430,9 +430,10 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$co_col2$");
                     //AdjustRowHeight(ws, variables, "$material_col2$");
                     AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
+                    AdjustRowHeight(ws, variables, "$note$");
                     AdjustRowHeight(ws, variables, "$note_a$");
                     AdjustRowHeight(ws, variables, "$note_c$");
-                    AdjustRowHeight(ws, variables, "$note_d$");
+                    //AdjustRowHeight(ws, variables, "$note_d$");
                 }
                 else if (projectId == 5520)
                 {
@@ -472,6 +473,47 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_c$");
                     AdjustRowHeight(ws, variables, "$note_d$");
                     AdjustRowHeight(ws, variables, "$note_g$");
+                }
+                else if (projectId == 5780)
+                {
+                    /// <summary>
+                    /// B1E 華桂聯合工務所
+                    /// <para>Project ID: 5780</para>
+                    /// <para>工令: 1CB109</para>
+                    /// </summary>
+                    /// <param name="state"></param>
+                    /// <param name="cd"></param>
+                    /// <returns></returns>
+                    // 依資料長度調整列數
+                    //AdjustRowNums(ws, variables, "$material_col2$");
+                    //AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
+                    //// 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
+                    //AdjustRowHeight(ws, variables, "$project_name$");
+                    //AdjustRowHeight(ws, variables, "$material_col2$");
+                    //AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
+                    //AdjustRowHeight(ws, variables, "$note$");
+                    //AdjustRowHeight(ws, variables, "$note_a$");
+                    //AdjustRowHeight(ws, variables, "$note_b$");
+                    //AdjustRowHeight(ws, variables, "$note_c$");
+                    //AdjustRowHeight(ws, variables, "$note_g$");
+                    AdjustRowHeight(ws, variables, "$note_f$");
+                    //AdjustRowNums(ws2, variables, "$material_col2$");
+                    //AdjustRowNums(ws2, variables, "$man_col1$", "$machine_col1$");
+                    //// 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
+                    //AdjustRowHeight(ws2, variables, "$project_name$");
+                    //AdjustRowHeight(ws2, variables, "$material_col2$");
+                    //AdjustRowHeight(ws2, variables, "$man_col1$", "$machine_col1$");
+                    //AdjustRowHeight(ws2, variables, "$note$");
+                    //AdjustRowHeight(ws2, variables, "$note_a$");
+                    //AdjustRowHeight(ws2, variables, "$note_b$");
+                    //AdjustRowHeight(ws2, variables, "$note_c$");
+                    //AdjustRowHeight(ws2, variables, "$note_g$");
+                    //AdjustRowHeight(ws2, variables, "$note_f$");
+                    //AdjustRowHeight(ws2, variables, "$note_f$");
+                    //var row=ws2.GetRow(0);
+                    //var cell=row.GetCell(0);
+                    //cell.SetCellValue("TEST");
+
                 }
                 else if (projectId == 5782)
                 {
@@ -535,33 +577,10 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_d$");
                     AdjustRowHeight(ws, variables, "$note_g$");
                 }
-                else if (projectId == 5780)
-                {
-                    /// <summary>
-                    /// B1E 華桂聯合工務所
-                    /// <para>Project ID: 5780</para>
-                    /// <para>工令: 1CB109</para>
-                    /// </summary>
-                    /// <param name="state"></param>
-                    /// <param name="cd"></param>
-                    /// <returns></returns>
-                    // 依資料長度調整列數
-                    AdjustRowNums(ws, variables, "$material_col2$");
-                    AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
-                    // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
-                    AdjustRowHeight(ws, variables, "$project_name$");
-                    AdjustRowHeight(ws, variables, "$material_col2$");
-                    AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
-                    AdjustRowHeight(ws, variables, "$note$");
-                    AdjustRowHeight(ws, variables, "$note_a$");
-                    AdjustRowHeight(ws, variables, "$note_b$");
-                    AdjustRowHeight(ws, variables, "$note_c$");
-                    AdjustRowHeight(ws, variables, "$note_g$");
-                    AdjustRowHeight(ws, variables, "$note_f$");
-                }
 
                 // 替換資料
                 ImportDataIntoPlaceholder(ws, variables);
+                //ImportDataIntoPlaceholder(ws2, variables);
             }
             // 不留實體檔案，直接串流到前端
             using var ms = new MemoryStream();
@@ -1291,12 +1310,15 @@ namespace EDR_Report.Controllers
         static int[,] GetCellIndexByPlaceholder(ISheet sheet, string placeholder)
         {
             List<int[]> indexesList = new();
+        
             for (int rowIndex = 0; rowIndex < sheet.LastRowNum; rowIndex++)
             {
+              
                 IRow row = sheet.GetRow(rowIndex);
                 for (int colIndex = 0; colIndex < row.LastCellNum; colIndex++)
                 {
                     ICell cell = row.GetCell(colIndex);
+                   
                     if (cell != null && cell.CellType == CellType.String && cell.StringCellValue == placeholder)
                     {
                         int[] indexes = new int[] { rowIndex + 1, colIndex + 1 };
