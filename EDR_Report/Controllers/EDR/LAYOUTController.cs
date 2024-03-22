@@ -247,18 +247,21 @@ namespace EDR_Report.Controllers
             {
                 5782 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "man"), //1:所有使用,2:本日使用,3:所有項目
                 6040 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "man"), //1:所有使用,2:本日使用,3:所有項目
+                5520 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "man"), //1:所有使用,2:本日使用,3:所有項目
                 _ => GetProjManMachineMaterial(db, projectId, calendarDate, "2", "man") //1:所有使用,2:本日使用,3:所有項目
             };
             var projMachine = projectId switch
             {
                 5782 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "machine"), //1:所有使用,2:本日使用,3:所有項目
                 6040 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "machine"), //1:所有使用,2:本日使用,3:所有項目
+                5520 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "machine"), //1:所有使用,2:本日使用,3:所有項目
                 _ => GetProjManMachineMaterial(db, projectId, calendarDate, "2", "machine") //1:所有使用,2:本日使用,3:所有項目
             };
             var projMaterial = projectId switch
             {
                 5782 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "material"), //1:所有使用,2:本日使用,3:所有項目
                 6040 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "material"), //1:所有使用,2:本日使用,3:所有項目
+                5520 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "material"), //1:所有使用,2:本日使用,3:所有項目
                 _ => GetProjManMachineMaterial(db, projectId, calendarDate, "2", "material") //1:所有使用,2:本日使用,3:所有項目
             };
             var projNote = GetProjNote(db, projectId, calendarDate);
@@ -1089,6 +1092,8 @@ namespace EDR_Report.Controllers
     , SUM_QTY
     , SUM_QTY_1DECI
     , SUM_QTY_2DECI
+,TODAY_QTY_1DECI_ZEROSPACE
+,TODAY_QTY_ZEROSPACE
     , FILTER_ID --1:所有,2:本日,3:歷史所有
 FROM (
 SELECT 
@@ -1108,6 +1113,8 @@ SELECT
     , NVL(c.SUM_QTY, '0') AS SUM_QTY
     , NVL(c.SUM_QTY_1DECI, '0') AS SUM_QTY_1DECI
     , NVL(c.SUM_QTY_2DECI, '0') AS SUM_QTY_2DECI
+,TODAY_QTY_1DECI_ZEROSPACE
+,TODAY_QTY_ZEROSPACE
     , NVL(FILTER_ID, '3') AS FILTER_ID --1:所有,2:本日,3:歷史所有
 FROM vsuser.BES_PROJECT_RESOURCES a
 LEFT JOIN (SELECT UOM_ID, NAME FROM vsuser.VS_UOMS) b
@@ -1123,6 +1130,8 @@ SELECT
     , SUM_QTY
     , SUM_QTY_1DECI
     , SUM_QTY_2DECI
+,TODAY_QTY_1DECI_ZEROSPACE
+,TODAY_QTY_ZEROSPACE
     , CASE WHEN TODAY_QTY='0' THEN '1' ELSE '2' END AS FILTER_ID
 FROM (
     SELECT       
@@ -1138,6 +1147,16 @@ FROM (
          THEN ' ' 
           ELSE TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990.0') 
          END AS TODAY_QTY_1DECI
+  , CASE 
+        WHEN SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END) = 0 
+         THEN ' ' 
+          ELSE TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990') 
+         END AS TODAY_QTY_ZEROSPACE
+ , CASE 
+        WHEN SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END) = 0 
+         THEN ' ' 
+          ELSE TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990.0') 
+         END AS TODAY_QTY_1DECI_ZEROSPACE
         , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
         THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.0') AS SUM_QTY_1DECI
         , TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
