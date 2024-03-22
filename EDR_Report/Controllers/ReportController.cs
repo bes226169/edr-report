@@ -68,10 +68,12 @@ namespace EDR_Report.Controllers
                 ////////////
                 // 編輯區4//
                 ////////////
-                "1ca803" => RPTLAYOUT(state, cd), //4780(1CA803)鳥嘴潭工務所 烏溪鳥嘴潭人工湖工程...
-                "1cb102" => RPTLAYOUT(state, cd), //5541(1CB102)大埔工務所 曾文水庫放水渠道及擴...
-                "1bb101" => RPTLAYOUT(state, cd), //5520(1CB102)大林蒲工務所 森霸二期
-                "1cb109" => RPTLAYOUT(state, cd), //5780(1CB109)華桂聯合工務所 鳥嘴潭淨水場新建統包工程(續) 
+                "1ca802" => RPTLAYOUT(state, cd), //4760(1CA802)八德專案工程處 桃園捷運綠線GC02標南出土段至G07站（不含）間地下段土建統包工程
+                "1ca803" => RPTLAYOUT(state, cd), //4780(1CA803)鳥嘴潭工務所 烏溪鳥嘴潭人工湖工程計畫-湖區工程
+                "1bb101" => RPTLAYOUT(state, cd), //5520(1BB101)大林蒲工務所 森霸二期行政區一般性建築物統包工程
+                "1cb102" => RPTLAYOUT(state, cd), //5541(1CB102)大埔工務所 曾文水庫放水渠道及擴大抽泥工程
+                "1cb109" => RPTLAYOUT(state, cd), //5780(1CB109)華桂聯合工務所 鳥嘴潭淨水場新建統包工程(續)
+                "1cb208" => RPTLAYOUT(state, cd), //6040(1CB208)博誠工務所 高雄新市鎮1-1、1-2及1-3號道路穿越高速公路工程(第X101G標)
                 _ => NotFound("錯誤的報表")
             };
         }
