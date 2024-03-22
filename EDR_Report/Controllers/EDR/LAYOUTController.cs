@@ -316,7 +316,7 @@ namespace EDR_Report.Controllers
                 { "$co_col4_2d$", projConsOverview["QUANTITY_2DECI"]},
                 { "$co_col5_2d$", projConsOverview["NOW_EDR_QUANTITY_2DECI"]},
                 { "$co_col6_2d$", projConsOverview["SUM_EDR_QUANTITY_2DECI"]},
-                { "$co_col5_3d$", projConsOverview["NOW_EDR_QUANTITY_3DECI"]},
+                { "$co_col5_3d_zerospace$", projConsOverview["NOW_EDR_QUANTITY_3DECI_ZEROSPACE"]},
                 { "$co_col6_3d$", projConsOverview["SUM_EDR_QUANTITY_3DECI"]},
                 { "$co_col4_4d$", projConsOverview["QUANTITY_4DECI"]},
                 { "$co_col5_4d$", projConsOverview["NOW_EDR_QUANTITY_4DECI"]},
@@ -337,7 +337,7 @@ namespace EDR_Report.Controllers
                 //{ "$material_col4$", projMaterial["QUANTITY"]},
                 { "$material_col5$", projMaterial["TODAY_QTY"]},
                 { "$material_col6$", projMaterial["SUM_QTY"]},
-                { "$material_col5_1d$", projMaterial["TODAY_QTY_1DECI"]},
+                { "$material_col5_1d_zerospace$", projMaterial["TODAY_QTY_1DECI_ZEROSPACE"]},
                 { "$material_col6_1d$", projMaterial["SUM_QTY_1DECI"]},
                 { "$material_col5_2d$", projMaterial["TODAY_QTY_2DECI"]},
                 { "$material_col6_2d$", projMaterial["SUM_QTY_2DECI"]},
@@ -345,6 +345,7 @@ namespace EDR_Report.Controllers
 
                 { "$man_col1$", projMan["NAME"]},
                 { "$man_col2$", projMan["TODAY_QTY"]},
+                { "$man_col2_zerospace$", projMan["TODAY_QTY_ZEROSPACE"]},
                 { "$man_col3$", projMan["SUM_QTY"]},
                 { "$man_col2_2d$", projMan["TODAY_QTY_2DECI"]},
                 { "$man_col3_2d$", projMan["SUM_QTY_2DECI"]},
@@ -352,7 +353,7 @@ namespace EDR_Report.Controllers
                 { "$machine_col1$", projMachine["NAME"]},
                 { "$machine_col2$", projMachine["TODAY_QTY"]},
                 { "$machine_col3$", projMachine["SUM_QTY"]},
-                { "$machine_col2_1d$", projMachine["TODAY_QTY_1DECI"]},
+                { "$machine_col2_1d_zerospace$", projMachine["TODAY_QTY_1DECI_ZEROSPACE"]},
                 { "$machine_col3_1d$", projMachine["SUM_QTY_1DECI"]},
                 { "$machine_col2_2d$", projMachine["TODAY_QTY_2DECI"]},
                 { "$machine_col3_2d$", projMachine["SUM_QTY_2DECI"]},
@@ -432,7 +433,7 @@ namespace EDR_Report.Controllers
                     // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
                     //AdjustRowHeight_1BB101(ws, variables, "$project_name$");
                     AdjustRowHeight(ws, variables, "$construction_item$");
-                    AdjustRowHeight(ws, variables, "$machine_col1$", "$material_col2$", "$material_col5_1d$");
+                    AdjustRowHeight(ws, variables, "$machine_col1$", "$material_col2$", "$material_col5_1d_zerospace$");
                     AdjustRowHeight(ws, variables, "$note_a$");
                     AdjustRowHeight(ws, variables, "$note_c$");
                     AdjustRowHeight(ws, variables, "$note_d$");
@@ -626,8 +627,9 @@ namespace EDR_Report.Controllers
             public string? NAME { get; set; }
             public string? UNIT { get; set; }
             public string? TODAY_QTY { get; set; }
+            public string? TODAY_QTY_ZEROSPACE { get; set; }
             public string? SUM_QTY { get; set; }
-            public string? TODAY_QTY_1DECI { get; set; }
+            public string? TODAY_QTY_1DECI_ZEROSPACE { get; set; }
             public string? SUM_QTY_1DECI { get; set; }
             public string? TODAY_QTY_2DECI { get; set; }
             public string? SUM_QTY_2DECI { get; set; }
@@ -663,7 +665,7 @@ namespace EDR_Report.Controllers
             public string? QUANTITY_2DECI { get; set; }
             public string? NOW_EDR_QUANTITY_2DECI { get; set; }
             public string? SUM_EDR_QUANTITY_2DECI { get; set; }
-            public string? NOW_EDR_QUANTITY_3DECI { get; set; }
+            public string? NOW_EDR_QUANTITY_3DECI_ZEROSPACE { get; set; }
             public string? SUM_EDR_QUANTITY_3DECI { get; set; }
             public string? QUANTITY_4DECI { get; set; }
             public string? NOW_EDR_QUANTITY_4DECI { get; set; }
@@ -950,7 +952,7 @@ namespace EDR_Report.Controllers
                         END AS SUM_EDR_QUANTITY_2DECI
                     , CASE WHEN NOW_EDR_QUANTITY = 0 THEN ' '
                         ELSE TO_CHAR(NVL(NOW_EDR_QUANTITY, NULL), 'FM999,999,999,990.000') 
-                        END AS NOW_EDR_QUANTITY_3DECI
+                        END AS NOW_EDR_QUANTITY_3DECI_ZEROSPACE
                     ,  TO_CHAR(NVL(SUM_EDR_QUANTITY, NULL), 'FM999,999,999,990.000') AS SUM_EDR_QUANTITY_3DECI
                     , CASE WHEN QUANTITY = 0 THEN '-' 
                         ELSE TO_CHAR(NVL(QUANTITY, NULL), 'FM999,999,999,990.0000') 
@@ -1014,19 +1016,20 @@ namespace EDR_Report.Controllers
                     , TRIM(MAX(UNIT)) AS UNIT
                     , TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
                         THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,999') AS TODAY_QTY
+                    ,CASE 
+                        WHEN TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990') = 0 
+                        THEN ' ' 
+                        ELSE TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990')
+                     END AS TODAY_QTY_ZEROSPACE
                     , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
                         THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,999') AS SUM_QTY
-                    --, TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
-                    --    THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.0') AS TODAY_QTY_1DECI
                     , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
                         THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.0') AS SUM_QTY_1DECI
-                    , CASE 
-                        WHEN SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END) = 0 
-                         THEN ' ' 
-                          ELSE TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990.0') 
-                         END AS TODAY_QTY_1DECI
-                    --, TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
-                    --    THEN CASE WHEN NVL(QUANTITY, 0) = 0 THEN NULL ELSE QUANTITY END ELSE 0 END), 'FM999,999,999,990.0') AS SUM_QTY_1DECI
+                    ,CASE 
+                        WHEN TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990') = 0 
+                        THEN ' ' 
+                        ELSE TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990')
+                     END AS TODAY_QTY_1DECI_ZEROSPACE
                     , TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
                         THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.00') AS TODAY_QTY_2DECI
                     , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
