@@ -296,6 +296,7 @@ namespace EDR_Report.Controllers
                 { "$v_day_sub$", projInfo["VDAY_SUB"] },
                 { "$vday_sub_t2$", projInfo["VDAY_SUB_T2"] },               //1,234.0日曆天
                 { "$vday_sub_num$", projInfo["VDAY_SUB_NUM"] },
+                { "$vday_sub_num_spread$", projInfo["VDAY_SUB_NUM_SPREAD"] },
                 { "$spread_day$", projInfo["SPREAD_DAY"] },
                 { "$spread_day_t2$", projInfo["SPREAD_DAY_T2"] },
                 { "$spread_day_num$", projInfo["SPREAD_DAY_NUM"] },
@@ -456,10 +457,11 @@ namespace EDR_Report.Controllers
                     // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
                     //AdjustRowHeight_1BB101(ws, variables, "$project_name$");
                     AdjustRowHeight(ws, variables, "$construction_item$");
-                    AdjustRowHeight(ws, variables, "$machine_col1$", "$material_col2$", "$material_col5_1d_zerospace$");
+                    AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$", "$material_col2$");
                     AdjustRowHeight(ws, variables, "$note_a$");
                     AdjustRowHeight(ws, variables, "$note_c$");
                     AdjustRowHeight(ws, variables, "$note_d$");
+                  
                 }
                 else if (projectId == 5541)
                 {
@@ -630,6 +632,7 @@ namespace EDR_Report.Controllers
             public string? VDAY_SUB { get; set; }
             public string? VDAY_SUB_T2 { get; set; }
             public string? VDAY_SUB_NUM { get; set; }
+            public string? VDAY_SUB_NUM_SPREAD { get; set; }
             public string? TDAY { get; set; }
             public string? CONSTRUCTION_PERIOD { get; set; }
             public string? TDAY_T2 { get; set; }
