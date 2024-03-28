@@ -25,7 +25,6 @@ namespace EDR_Report.Controllers
             ////////////
             // 編輯區1//
             ////////////
-            ////////////
             if (projectId == 4341)
             {
                 /// <summary>
@@ -249,6 +248,7 @@ namespace EDR_Report.Controllers
                 5782 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "man"), //1:所有使用,2:本日使用,3:所有項目
                 6040 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "man"), //1:所有使用,2:本日使用,3:所有項目
                 5520 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "man"), //1:所有使用,2:本日使用,3:所有項目
+                5780 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "man"), //1:所有使用,2:本日使用,3:所有項目
                 _ => GetProjManMachineMaterial(db, projectId, calendarDate, "2", "man") //1:所有使用,2:本日使用,3:所有項目
             };
             var projMachine = projectId switch
@@ -256,6 +256,7 @@ namespace EDR_Report.Controllers
                 5782 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "machine"), //1:所有使用,2:本日使用,3:所有項目
                 6040 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "machine"), //1:所有使用,2:本日使用,3:所有項目
                 5520 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "machine"), //1:所有使用,2:本日使用,3:所有項目
+                5780 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "machine"), //1:所有使用,2:本日使用,3:所有項目
                 _ => GetProjManMachineMaterial(db, projectId, calendarDate, "2", "machine") //1:所有使用,2:本日使用,3:所有項目
             };
             var projMaterial = projectId switch
@@ -263,12 +264,14 @@ namespace EDR_Report.Controllers
                 5782 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "material"), //1:所有使用,2:本日使用,3:所有項目
                 6040 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "material"), //1:所有使用,2:本日使用,3:所有項目
                 5520 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "material"), //1:所有使用,2:本日使用,3:所有項目
+                5780 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "material"), //1:所有使用,2:本日使用,3:所有項目
                 _ => GetProjManMachineMaterial(db, projectId, calendarDate, "2", "material") //1:所有使用,2:本日使用,3:所有項目
             };
             var projNote = GetProjNote(db, projectId, calendarDate);
             var projMilestone = GetProjMilestone(db, projectId);
             // 待確認資料來源
             projInfo["CONSTRUCTOR"] = new object[] { "中華工程股份有限公司" };
+        
             // 建立資料字典檔(只增不刪)
             Dictionary<string, object[]> variables = new()
             {
@@ -296,6 +299,7 @@ namespace EDR_Report.Controllers
                 { "$v_day_t2$", projInfo["VDAY_T2"] },                     //1,234日曆天
                 { "$v_day_sub$", projInfo["VDAY_SUB"] },
                 { "$vday_sub_t2$", projInfo["VDAY_SUB_T2"] },               //1,234.0日曆天
+                { "$vday_sub_t3$", projInfo["VDAY_SUB_T3"] },               
                 { "$vday_sub_num$", projInfo["VDAY_SUB_NUM"] },
                 { "$vday_sub_num_spread$", projInfo["VDAY_SUB_NUM_SPREAD"] },
                 { "$spread_day$", projInfo["SPREAD_DAY"] },
@@ -319,6 +323,7 @@ namespace EDR_Report.Controllers
                 { "$m52$", projInfo["M52"] },
                 { "$m53$", projInfo["M53"] },
                 { "$m54$", projInfo["M54"] },
+                { "$sign$",  new object[] { "簽章：【工地主任】(註3)" }},
 
                 { "$period1$", projMilestone["MILESTONE_NO_SUB"] },
                 { "$period2$", projMilestone["MILESTONE_NO_SUB"] },
@@ -337,6 +342,9 @@ namespace EDR_Report.Controllers
                 { "$co_col4$", projConsOverview["QUANTITY"]},
                 { "$co_col5$", projConsOverview["NOW_EDR_QUANTITY"]},
                 { "$co_col6$", projConsOverview["SUM_EDR_QUANTITY"]},
+                { "$co_col4_qdp$", projConsOverview["QUANTITY_BY_QDP"]},
+                { "$co_col5_qdp$", projConsOverview["NOW_EDR_QUANTITY_BY_QDP"]},
+                { "$co_col6_qdp$", projConsOverview["SUM_EDR_QUANTITY_BY_QDP"]},
                 { "$co_col4_2d$", projConsOverview["QUANTITY_2DECI"]},
                 { "$co_col5_2d$", projConsOverview["NOW_EDR_QUANTITY_2DECI"]},
                 { "$co_col6_2d$", projConsOverview["SUM_EDR_QUANTITY_2DECI"]},
@@ -368,14 +376,18 @@ namespace EDR_Report.Controllers
                 //{ "$material_col7$", projMaterial["REMARK"]},
 
                 { "$man_col1$", projMan["NAME"]},
+                { "$man_col1_2$", projMan["SEQ_NAME"]},
                 { "$man_col2$", projMan["TODAY_QTY"]},
+                { "$man_col2_2$", projMan["TODAY_QTY0_NULL"]},
                 { "$man_col2_zerospace$", projMan["TODAY_QTY_ZEROSPACE"]},
                 { "$man_col3$", projMan["SUM_QTY"]},
                 { "$man_col2_2d$", projMan["TODAY_QTY_2DECI"]},
                 { "$man_col3_2d$", projMan["SUM_QTY_2DECI"]},
 
                 { "$machine_col1$", projMachine["NAME"]},
+                { "$machine_col1_2$", projMachine["SEQ_NAME"]},
                 { "$machine_col2$", projMachine["TODAY_QTY"]},
+                { "$machine_col2_2$", projMachine["TODAY_QTY0_NULL"]},
                 { "$machine_col3$", projMachine["SUM_QTY"]},
                 { "$machine_col2_1d_zerospace$", projMachine["TODAY_QTY_1DECI_ZEROSPACE"]},
                 { "$machine_col3_1d$", projMachine["SUM_QTY_1DECI"]},
@@ -502,17 +514,19 @@ namespace EDR_Report.Controllers
                     ISheet ws2 = wb.GetSheetAt(1);
                     // 依資料長度調整列數
                     AdjustRowNums(ws, variables, "$material_col2$");
-                    AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
+                    AdjustRowNums(ws, variables, "$man_col1_2$", "$machine_col1_2$");
                     AdjustRowNums(ws2, variables, "$co_col1$");
                     // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
-                    AdjustRowHeight(ws, variables, "$project_name$");
+                    AdjustRowHeight(ws, variables, "$project_name$", rowheight:34);
+                    AdjustRowHeight(ws, variables, "$note_d$", rowheight: 180);
                     AdjustRowHeight(ws, variables, "$material_col2$");
-                    AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
+                    AdjustRowHeight(ws, variables, "$man_col1_2$", "$machine_col1_2$");
                     AdjustRowHeight(ws, variables, "$note$");
-                    AdjustRowHeight(ws, variables, "$note_a$");
-                    AdjustRowHeight(ws, variables, "$note_b$");
-                    AdjustRowHeight(ws, variables, "$note_c$");
-                    AdjustRowHeight(ws, variables, "$note_f$");
+                    AdjustRowHeight(ws, variables, "$note_a$", rowheight: 102);
+                    AdjustRowHeight(ws, variables, "$note_b$", rowheight: 40);
+                    AdjustRowHeight(ws, variables, "$note_c$", rowheight: 160);
+                    AdjustRowHeight(ws, variables, "$sign$", rowheight: 50);
+                   
                     AdjustRowHeight(ws2, variables, "$co_col1$");
                     ImportDataIntoPlaceholder(ws2, variables);
                 }
@@ -632,6 +646,7 @@ namespace EDR_Report.Controllers
             public string? VDAY_T2 { get; set; }
             public string? VDAY_SUB { get; set; }
             public string? VDAY_SUB_T2 { get; set; }
+            public string? VDAY_SUB_T3 { get; set; }
             public string? VDAY_SUB_NUM { get; set; }
             public string? VDAY_SUB_NUM_SPREAD { get; set; }
             public string? TDAY { get; set; }
@@ -662,10 +677,12 @@ namespace EDR_Report.Controllers
             public string? PBG_CODE { get; set; }
             public string? COST_CODE { get; set; }
             public string? NAME { get; set; }
+            public string? SEQ_NAME { get; set; }
             public string? UNIT { get; set; }
             public string? UNIT_PRICE { get; set; }
             public string? QUANTITY { get; set; }
             public string? TODAY_QTY { get; set; }
+            public string? TODAY_QTY0_NULL { get; set; }
             public string? TODAY_QTY_ZEROSPACE { get; set; }
             public string? SUM_QTY { get; set; }
             public string? TODAY_QTY_1DECI_ZEROSPACE { get; set; }
@@ -673,6 +690,7 @@ namespace EDR_Report.Controllers
             public string? TODAY_QTY_2DECI { get; set; }
             public string? SUM_QTY_2DECI { get; set; }
             public string? FILTER_ID { get; set; }
+	    public string? CHK_SEL { get; set; }
         }
         public class PROJECT_NOTE_MODEL
         {
@@ -704,6 +722,9 @@ namespace EDR_Report.Controllers
             public string? QUANTITY { get; set; }
             public string? NOW_EDR_QUANTITY { get; set; }
             public string? SUM_EDR_QUANTITY { get; set; }
+            public string? QUANTITY_BY_QDP { get; set; }
+            public string? NOW_EDR_QUANTITY_BY_QDP { get; set; }
+            public string? SUM_EDR_QUANTITY_BY_QDP { get; set; }
             public string? QUANTITY_2DECI { get; set; }
             public string? NOW_EDR_QUANTITY_2DECI { get; set; }
             public string? SUM_EDR_QUANTITY_2DECI { get; set; }
@@ -837,6 +858,9 @@ namespace EDR_Report.Controllers
                     TO_NUMBER(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
                     PROJ.START_DATE + 1)), 'FM999,999,990.0') || '日曆天' AS VDAY_SUB_T2                                 -- 剩餘工期(日曆天)
                 , TO_CHAR((PROJ.ORIGINAL_DAY - 
+                     TO_NUMBER(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
+                     PROJ.START_DATE + 1 - NOTE.NOCAL_DAY)), 'FM999,999,990.0') || '日曆天' AS VDAY_SUB_T3                -- 剩餘工期(日曆天扣除不計工期) 
+                , TO_CHAR((PROJ.ORIGINAL_DAY - 
                     TO_NUMBER(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
                     PROJ.START_DATE + 1)), 'FM999,999,999,999') AS VDAY_SUB_NUM                                          -- 剩餘工期(純數字)
                 , TO_CHAR(TO_NUMBER(NVL(PROJ.ORIGINAL_DAY, 0)) + TO_NUMBER(NVL(PROJ.SPREAD_DAY, 0)) -(TO_NUMBER(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
@@ -848,6 +872,8 @@ namespace EDR_Report.Controllers
                     PROJ.START_DATE + 1, 'FM999,999,999,999') || '天' AS SDAY                                           -- 累計工期
                 , TO_CHAR(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
                     PROJ.START_DATE + 1, 'FM999,999,999,999') || '日曆天' AS SDAY_T2                                    -- 累計工期
+                , TO_CHAR(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
+                    PROJ.START_DATE + 1-NOTE.NOCAL_DAY, 'FM999,999,999,999') || '日曆天' AS SDAY_T3                      -- 累計工期(扣除不計工期)
                 , NOTE.M49                                                                                              -- 以下全部由紙本勾選
                 , NOTE.M50 AS M50_
                 , CASE
@@ -995,7 +1021,11 @@ namespace EDR_Report.Controllers
                     , TO_CHAR(NVL(QUANTITY, NULL), 'FM999,999,999,999') AS QUANTITY
                     , TO_CHAR(NVL(NOW_EDR_QUANTITY, NULL), 'FM999,999,999,999') AS NOW_EDR_QUANTITY
                     , TO_CHAR(NVL(SUM_EDR_QUANTITY, NULL), 'FM999,999,999,999') AS SUM_EDR_QUANTITY
-
+                    
+                    , QUANTITY_BY_QDP
+                    , NOW_EDR_QUANTITY_BY_QDP
+                    , SUM_EDR_QUANTITY_BY_QDP
+                    
                     , CASE WHEN QUANTITY = 0 THEN '-' 
                         ELSE TO_CHAR(NVL(QUANTITY, NULL), 'FM999,999,999,990.00') 
                         END AS QUANTITY_2DECI
@@ -1026,6 +1056,19 @@ namespace EDR_Report.Controllers
                     , CASE WHEN OWN_CONTROL_ITEM = 'S' THEN 0 ELSE QUANTITY END AS QUANTITY
                     , CASE WHEN OWN_CONTROL_ITEM = 'S' THEN 0 ELSE NOW_EDR_QUANTITY END AS NOW_EDR_QUANTITY
                     , CASE WHEN OWN_CONTROL_ITEM = 'S' THEN 0 ELSE SUM_EDR_QUANTITY END AS SUM_EDR_QUANTITY
+                    , CASE
+                        WHEN OWN_CONTROL_ITEM = 'S' THEN NULL
+                        ELSE TO_CHAR(QUANTITY, 'FM9999999990.' || RPAD('0', QTY_DECIMAL_PLACE, '0'))
+                    END AS QUANTITY_BY_QDP
+                    , CASE
+                        WHEN OWN_CONTROL_ITEM = 'S' THEN NULL
+                        ELSE TO_CHAR(NOW_EDR_QUANTITY, 'FM9999999990.' || RPAD('0', QTY_DECIMAL_PLACE, '0'))
+                    END AS NOW_EDR_QUANTITY_BY_QDP
+                    , CASE
+                        WHEN OWN_CONTROL_ITEM = 'S' THEN NULL
+                        ELSE TO_CHAR(SUM_EDR_QUANTITY, 'FM9999999990.' || RPAD('0', QTY_DECIMAL_PLACE, '0'))
+                    END AS SUM_EDR_QUANTITY_BY_QDP
+                    , QTY_DECIMAL_PLACE           --依此項決定小數點位數
                     , OWN_CODE
                     , PROJECT_ID
                     , CREATED_BY
@@ -1087,10 +1130,12 @@ namespace EDR_Report.Controllers
     , PBG_CODE
     , COST_CODE
     , NAME
+    , ROW_NUMBER() OVER (PARTITION BY RESOURCE_CLASS ORDER BY SEQUENCE_NO)||'.'||NAME AS SEQ_NAME       --加入編號的名稱
     , UNIT
     , UNIT_PRICE
     , TO_CHAR(QUANTITY, 'FM999,999,999,999') AS QUANTITY
     , TODAY_QTY
+    , REPLACE(TODAY_QTY,0,' ') TODAY_QTY0_NULL
     , TODAY_QTY_1DECI
     , TODAY_QTY_2DECI
     , SUM_QTY
@@ -1111,6 +1156,7 @@ SELECT
     , TRIM(b.NAME) AS UNIT
     , a.UNIT_PRICE
     , a.QUANTITY
+    , a.CHK_SEL   -- 營管系統裡面設定此施工項目是否列印的判斷欄位
     , NVL(c.TODAY_QTY, '0') AS TODAY_QTY
     , NVL(c.TODAY_QTY_1DECI, '0') AS TODAY_QTY_1DECI
     , NVL(c.TODAY_QTY_2DECI, '0') AS TODAY_QTY_2DECI
@@ -1175,6 +1221,7 @@ ON a.PROJECT_ID=c.PROJECT_ID
 AND a.RESOURCE_CLASS=c.RESOURCE_CLASS 
 AND a.RESOURCE_ID=c.RESOURCE_ID
 WHERE a.PROJECT_ID = :projectId
+AND a.CHK_SEL is NULL
 )
 WHERE RESOURCE_CLASS IN {resourceClass} --2:人,3,5:機,4:料
 AND FILTER_ID IN {filterId}
@@ -1706,7 +1753,7 @@ ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
             return result;
         }
         // 依placeholder1(或與placeholder2比較)，依資料字數調整row高
-        static void AdjustRowHeight(ISheet sheet, Dictionary<string, object[]> variables, string placeholder1, string? placeholder2 = null, string? placeholder3 = null)
+        static void AdjustRowHeight(ISheet sheet, Dictionary<string, object[]> variables, string placeholder1, string? placeholder2 = null, string? placeholder3 = null, float rowheight = 17)
         {
             string placeholder;
             if (!string.IsNullOrEmpty(placeholder1) && !string.IsNullOrEmpty(placeholder2) && !string.IsNullOrEmpty(placeholder3))
@@ -1752,7 +1799,15 @@ ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
                     {
                         rowHeightCounts1 += Math.Ceiling((double)line.Length / totalCharNum1);
                     }
-                    rowHeight1.Add(rowHeightCounts1 * 20 * 17);
+                    if(rowHeightCounts1 * 17 >= rowheight)
+                    {
+                        rowHeight1.Add(rowHeightCounts1 * 20 * 17);
+                    }
+                    else
+                    {
+                        rowHeight1.Add(20 * rowheight);
+                    }
+                    //rowHeight1.Add(rowHeightCounts1 * 20 * rowheight);
                 }
                 List<double> rowHeight2 = new();
                 for (int i = 0; i < data2.Length; i++)
@@ -1764,7 +1819,15 @@ ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
                     {
                         rowHeightCounts2 += Math.Ceiling((double)line.Length / totalCharNum2);
                     }
-                    rowHeight2.Add(rowHeightCounts2 * 20 * 17);
+                    if (rowHeightCounts2 * 17 >= rowheight)
+                    {
+                        rowHeight2.Add(rowHeightCounts2 * 20 * 17);
+                    }
+                    else
+                    {
+                        rowHeight2.Add(20 * rowheight);
+                    }
+                    //rowHeight2.Add(rowHeightCounts2 * 20 * rowheight);
                 }
                 List<double> rowHeight3 = new();
                 for (int i = 0; i < data3.Length; i++)
@@ -1776,7 +1839,15 @@ ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
                     {
                         rowHeightCounts3 += Math.Ceiling((double)line.Length / totalCharNum3);
                     }
-                    rowHeight3.Add(rowHeightCounts3 * 20 * 17);
+                    if (rowHeightCounts3 * 17 >= rowheight)
+                    {
+                        rowHeight3.Add(rowHeightCounts3 * 20 * 17);
+                    }
+                    else
+                    {
+                        rowHeight3.Add(20 * rowheight);
+                    }
+                    //rowHeight3.Add(rowHeightCounts3 * 20 * rowheight);
                 }
                 double[] rowHeight = Enumerable.Range(0, Math.Max(Math.Max(rowHeight1.Count, rowHeight2.Count), rowHeight3.Count))
                     .Select(i => Math.Max(Math.Max(rowHeight1.ElementAtOrDefault(i), rowHeight2.ElementAtOrDefault(i)), rowHeight3.ElementAtOrDefault(i)))
@@ -1834,12 +1905,28 @@ ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
                         if (rowHeightCounts1 >= rowHeightCounts2)
                         {
                             var row = sheet.GetRow(indexesArray1[i, 0] - 1);
-                            row.Height = (short)(rowHeightCounts1 * 20 * 17);
+                            if (rowHeightCounts1 * 17 >= rowheight)
+                            {
+                                row.Height = (short)(rowHeightCounts1 * 20 * 17);
+                            }
+                            else
+                            {
+                                row.Height = (short)(20 * rowheight);
+                            }
+                            //row.Height = (short)(rowHeightCounts1 * 20 * rowheight);
                         }
                         else
                         {
                             var row = sheet.GetRow(indexesArray2[i, 0] - 1);
-                            row.Height = (short)(rowHeightCounts2 * 20 * 17);
+                            if (rowHeightCounts2 * 17 >= rowheight)
+                            {
+                                row.Height = (short)(rowHeightCounts2 * 20 * 17);
+                            }
+                            else
+                            {
+                                row.Height = (short)(20 * rowheight);
+                            }
+                            //row.Height = (short)(rowHeightCounts2 * 20 * rowheight);
                         }
                     }
                 }
@@ -1878,7 +1965,15 @@ ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
                             rowHeightCounts += Math.Ceiling((double)line.Length / totalCharNum);
                         }
                         var row = sheet.GetRow(indexesArray[i, 0] - 1);
-                        row.Height = (short)(rowHeightCounts * 20 * 17);
+                        if (rowHeightCounts * 17 >= rowheight)
+                        {
+                            row.Height = (short)(rowHeightCounts * 20 * 17);
+                        }
+                        else
+                        {
+                            row.Height = (short)(20 * rowheight);
+                        }
+                        //row.Height = (short)(rowHeightCounts * 20 * rowheight);
                     }
                 }
             }
@@ -1905,16 +2000,24 @@ ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
                         rowHeightCounts += Math.Ceiling((double)line.Length / totalCharNum);
                     }
                     var row = sheet.GetRow(indexesArray[i, 0] - 1);
-                    row.Height = (short)(rowHeightCounts * 20 * 17);
+                    if (rowHeightCounts * 17 >= rowheight)
+                    {
+                        row.Height = (short)(rowHeightCounts * 20 * 17);
+                    }
+                    else
+                    {
+                        row.Height = (short)(20 * rowheight);
+                    }
+                    //row.Height = (short)(rowHeightCounts * 20 * rowheight);
                 }
             }
 
         }
         // 調整row數及row高
-        static void AdjustRowNumsAndHeight(ISheet sheet, Dictionary<string, object[]> variables, string placeholder1, string? placeholder2 = null, string? placeholder3 = null)
+        static void AdjustRowNumsAndHeight(ISheet sheet, Dictionary<string, object[]> variables, string placeholder1, string? placeholder2 = null, string? placeholder3 = null, float rowheight=17)
         {
             AdjustRowNums(sheet, variables, placeholder1, placeholder2, placeholder3);
-            AdjustRowHeight(sheet, variables, placeholder1, placeholder2, placeholder3);
+            AdjustRowHeight(sheet, variables, placeholder1, placeholder2, placeholder3, rowheight);
         }
     }
 }

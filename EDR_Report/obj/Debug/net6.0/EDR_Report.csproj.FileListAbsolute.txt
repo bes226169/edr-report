@@ -281,17 +281,11 @@ D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\libman.json
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\EDR_Report.staticwebassets.runtime.json
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\EDR_Report.exe
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1bb101.xlsx
-D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1ca803 4780(A8C鳥嘴潭所)--1CA803烏溪鳥嘴潭人工湖工程計畫-湖區工程.txt
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1ca803.xlsx
-D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb102 5541(A8F大埔)--1CB102曾文水庫放水渠道及擴大抽泥工程.txt
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb102.xlsx
-D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb108 5782(A6E大林蒲)--1CB108森霸二期太陽能光電設備與滯洪池統包工程.txt
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb108.xlsx
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb109.xlsx
-D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb208 6040(B2E博誠)--1CB208高雄新市鎮1-1、1-2及1-3號道路穿越高速公路工程(第X101G標).txt
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb208.xlsx
-D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\rpt1cb004_1.xlsx
-D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\rpt1cb004_2.xlsx
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\EDR_Report.deps.json
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\EDR_Report.runtimeconfig.json
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\EDR_Report.dll
@@ -368,4 +362,11 @@ D:\Github\edr-report\EDR_Report\obj\Debug\net6.0\refint\EDR_Report.dll
 D:\Github\edr-report\EDR_Report\obj\Debug\net6.0\EDR_Report.pdb
 D:\Github\edr-report\EDR_Report\obj\Debug\net6.0\EDR_Report.genruntimeconfig.cache
 D:\Github\edr-report\EDR_Report\obj\Debug\net6.0\ref\EDR_Report.dll
-D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\~$edr1cb109.xlsx
+D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1bb101 5520(1BB101)大林蒲工務所 森霸二期行政區一般性建築物統包工程.txt
+D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1ca802 4760(1CA802)八德專案工程處 桃園捷運綠線GC02標南出土段至G07站（不含）間地下段土建統包工程.txt
+D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1ca802.xlsx
+D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1ca803 4780(1CA803)鳥嘴潭工務所 烏溪鳥嘴潭人工湖工程計畫-湖區工程.txt
+D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb102 5541(1CB102)大埔工務所 曾文水庫放水渠道及擴大抽泥工程.txt
+D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb108 5782(1CB108)大林蒲工務所 森霸二期太陽能光電設備與滯洪池統包工程.txt
+D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb109 5780(1CB109)華桂聯合工務所 鳥嘴潭淨水場新建統包工程(續).txt
+D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb208 6040(1CB208)博誠工務所 高雄新市鎮1-1、1-2及1-3號道路穿越高速公路工程(第X101G標).txt
