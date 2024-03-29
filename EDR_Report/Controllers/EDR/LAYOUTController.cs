@@ -249,6 +249,7 @@ namespace EDR_Report.Controllers
                 6040 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "man"), //1:所有使用,2:本日使用,3:所有項目
                 5520 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "man"), //1:所有使用,2:本日使用,3:所有項目
                 5780 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "man"), //1:所有使用,2:本日使用,3:所有項目
+                4760 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "man"), //1:所有使用,2:本日使用,3:所有項目
                 _ => GetProjManMachineMaterial(db, projectId, calendarDate, "2", "man") //1:所有使用,2:本日使用,3:所有項目
             };
             var projMachine = projectId switch
@@ -257,6 +258,7 @@ namespace EDR_Report.Controllers
                 6040 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "machine"), //1:所有使用,2:本日使用,3:所有項目
                 5520 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "machine"), //1:所有使用,2:本日使用,3:所有項目
                 5780 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "machine"), //1:所有使用,2:本日使用,3:所有項目
+                4760 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "machine"), //1:所有使用,2:本日使用,3:所有項目
                 _ => GetProjManMachineMaterial(db, projectId, calendarDate, "2", "machine") //1:所有使用,2:本日使用,3:所有項目
             };
             var projMaterial = projectId switch
@@ -265,6 +267,7 @@ namespace EDR_Report.Controllers
                 6040 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "material"), //1:所有使用,2:本日使用,3:所有項目
                 5520 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "material"), //1:所有使用,2:本日使用,3:所有項目
                 5780 => GetProjManMachineMaterial(db, projectId, calendarDate, "1", "material"), //1:所有使用,2:本日使用,3:所有項目
+                4760 => GetProjManMachineMaterial(db, projectId, calendarDate, "3", "material"), //1:所有使用,2:本日使用,3:所有項目
                 _ => GetProjManMachineMaterial(db, projectId, calendarDate, "2", "material") //1:所有使用,2:本日使用,3:所有項目
             };
             var projNote = GetProjNote(db, projectId, calendarDate);
@@ -312,6 +315,7 @@ namespace EDR_Report.Controllers
                 { "$exp_percent$", projInfo["EXP_PERCENT"] },
                 { "$exp_percent_t2$", projInfo["EXP_PERCENT_T2"] },
                 { "$exp_percent_t3$", projInfo["EXP_PERCENT_T3"] },         // 0.01
+                { "$today_exp_percent$", projInfo["TODAY_EXP_PERCENT"] },
                 { "$act_sum$", projInfo["ACT_SUM"] },
                 { "$act_sum_t2$", projInfo["ACT_SUM_T2"] },
                 { "$act_sum_t3$", projInfo["ACT_SUM_T3"] },                 // 0.01
@@ -449,12 +453,12 @@ namespace EDR_Report.Controllers
                     /// <param name="cd"></param>
                     /// <returns></returns>
                     AdjustRowNums(ws, variables, "$co_col2$");
-                    //AdjustRowNums(ws, variables, "$material_col2$");
+                    AdjustRowNums(ws, variables, "$material_col2$");
                     AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
                     // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
-                    AdjustRowHeight(ws, variables, "$project_name$");
+                    AdjustRowHeight(ws, variables, "$project_name$", rowheight: 68);
                     AdjustRowHeight(ws, variables, "$co_col2$");
-                    //AdjustRowHeight(ws, variables, "$material_col2$");
+                    AdjustRowHeight(ws, variables, "$material_col2$");
                     AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
                     AdjustRowHeight(ws, variables, "$note$");
                     AdjustRowHeight(ws, variables, "$note_a$");
@@ -521,6 +525,7 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_d$", rowheight: 180);
                     AdjustRowHeight(ws, variables, "$material_col2$");
                     AdjustRowHeight(ws, variables, "$man_col1_2$", "$machine_col1_2$");
+                    AdjustRowHeight(ws, variables, "$m52$");
                     AdjustRowHeight(ws, variables, "$note$");
                     AdjustRowHeight(ws, variables, "$note_a$", rowheight: 102);
                     AdjustRowHeight(ws, variables, "$note_b$", rowheight: 40);
@@ -629,6 +634,7 @@ namespace EDR_Report.Controllers
             public string? EXP_PERCENT { get; set; }
             public string? EXP_PERCENT_T2 { get; set; }
             public string? EXP_PERCENT_T3 { get; set; }
+            public string? TODAY_EXP_PERCENT { get; set; }
             public string? ACT_PERCENT { get; set; }
             public string? ACT_PERCENT_T3 { get; set; }
             public string? ACT_SUM { get; set; }
@@ -835,6 +841,10 @@ namespace EDR_Report.Controllers
                 , TO_CHAR(NVL(NOTE.EXP_PERCENT,-1) * 100.0, 'FM999,999.0000') || '%' AS EXP_PERCENT                     -- 預定進度(%) (至本日累計預定進度)
                 , TO_CHAR(NVL(NOTE.EXP_PERCENT,-1) * 1.0, 'FM999,999.000') || '%' AS EXP_PERCENT_T2 
                 , TO_CHAR(NVL(NOTE.EXP_PERCENT,-1) * 1.0, 'FM999,999.00')  AS EXP_PERCENT_T3
+                ,TO_CHAR(NVL(EXP_PERCENT -(select EXP_PERCENT
+                                             FROM VSUSER.BES_EDR_NOTES 
+                                            WHERE CALENDAR_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd')-1
+                                              and project_id = :projectId),-1) * 1.0, 'FM999,990.00') as TODAY_EXP_PERCENT    --本日預定進度(今日累計-昨日累計)
                 , NVL(NOTE.ACT_PERCENT, -1) AS ACT_PERCENT                                                              -- 本日實際進度
                 , TO_CHAR(NVL(NOTE.ACT_PERCENT, -1) * 1.0, 'FM999,990.00') AS ACT_PERCENT_T3
                 , TO_CHAR(NVL(NOTE.ACT_SUM, -1) * 100.0, 'FM999,999.0000') || '%' AS ACT_SUM                            -- 實際進度(%) (至本日累計實際進度)
