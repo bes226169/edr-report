@@ -297,6 +297,7 @@ namespace EDR_Report.Controllers
                 { "$s_day$", projInfo["SDAY"] },                           //1,234天
                 { "$v_day$", projInfo["VDAY"] },                           //1,234天
                 { "$t_day_t2$", projInfo["TDAY_T2"] },                     //1,234日曆天
+                { "$t_day_t3$", projInfo["TDAY_T3"] },                     //1,234日曆天
                 { "$s_day_t2$", projInfo["SDAY_T2"] },                     //1,234日曆天
                 { "$s_day_t3$", projInfo["SDAY_T3"] },                     //1,234.0日曆天
                 { "$v_day_t2$", projInfo["VDAY_T2"] },                     //1,234日曆天
@@ -305,6 +306,7 @@ namespace EDR_Report.Controllers
                 { "$vday_sub_t3$", projInfo["VDAY_SUB_T3"] },               
                 { "$vday_sub_num$", projInfo["VDAY_SUB_NUM"] },
                 { "$vday_sub_num_spread$", projInfo["VDAY_SUB_NUM_SPREAD"] },
+                { "$extend_day_t2$", projInfo["EXTEND_DAY_T2"] },           // note 展延
                 { "$spread_day$", projInfo["SPREAD_DAY"] },
                 { "$spread_day_t2$", projInfo["SPREAD_DAY_T2"] },
                 { "$spread_day_num$", projInfo["SPREAD_DAY_NUM"] },
@@ -644,6 +646,7 @@ namespace EDR_Report.Controllers
             public string? NOCAL_DAY { get; set; }
             public string? NOCAL_DAY_T2 { get; set; }
             public string? EXTEND_DAY { get; set; }
+            public string? EXTEND_DAY_T2 { get; set; }
             public string? SPREAD_DAY { get; set; }
             public string? SPREAD_DAY_T2 { get; set; }
             public string? SPREAD_DAY_T3 { get; set; }
@@ -658,6 +661,7 @@ namespace EDR_Report.Controllers
             public string? TDAY { get; set; }
             public string? CONSTRUCTION_PERIOD { get; set; }
             public string? TDAY_T2 { get; set; }
+            public string? TDAY_T3 { get; set; }
             public string? SDAY { get; set; }
             public string? SDAY_T2 { get; set; }
             public string? SDAY_T3 { get; set; }
@@ -854,6 +858,7 @@ namespace EDR_Report.Controllers
                 , NVL(NOTE.NOCAL_DAY, -1) AS NOCAL_DAY                                                                  -- 免計工期(天
                 , TO_CHAR(NVL(NOTE.NOCAL_DAY, 0) * 1.0 , 'FM999,990.0') || '日曆天'  AS NOCAL_DAY_T2                    -- 免計工期(日曆天)
                 , NVL(NOTE.EXTEND_DAY, -1) AS EXTEND_DAY                                                                -- 展延工期(天)
+                , TO_CHAR(NVL(NOTE.EXTEND_DAY, 0), 'FM999,999,999.0') || '日曆天' AS EXTEND_DAY_T2                    -- note展延工期(日曆天)   
                 , TO_CHAR(NVL(PROJ.SPREAD_DAY, 0), 'FM999,999,999,999') || '天' AS SPREAD_DAY                           -- 展延天數
                 , TO_CHAR(NVL(PROJ.SPREAD_DAY, 0), 'FM999,999,999,999') || '日曆天' AS SPREAD_DAY_T2                    -- 展延天數
                 , TO_CHAR(NVL(PROJ.SPREAD_DAY, 0), 'FM999,999,999,999')  AS SPREAD_DAY_NUM                              -- 展延天數(純數字)
@@ -867,9 +872,9 @@ namespace EDR_Report.Controllers
                 , TO_CHAR((PROJ.ORIGINAL_DAY - 
                     TO_NUMBER(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
                     PROJ.START_DATE + 1)), 'FM999,999,990.0') || '日曆天' AS VDAY_SUB_T2                                 -- 剩餘工期(日曆天)
-                , TO_CHAR((PROJ.ORIGINAL_DAY - 
+                , TO_CHAR((PROJ.ORIGINAL_DAY + NOTE.EXTEND_DAY - 
                      TO_NUMBER(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
-                     PROJ.START_DATE + 1 - NOTE.NOCAL_DAY)), 'FM999,999,990.0') || '日曆天' AS VDAY_SUB_T3                -- 剩餘工期(日曆天扣除不計工期) 
+                     PROJ.START_DATE + 1 ) + nocal_day), 'FM999,999,990.0') || '日曆天' AS VDAY_SUB_T3                   -- 剩餘工期(核定+展延-累計)  
                 , TO_CHAR((PROJ.ORIGINAL_DAY - 
                     TO_NUMBER(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
                     PROJ.START_DATE + 1)), 'FM999,999,999,999') AS VDAY_SUB_NUM                                          -- 剩餘工期(純數字)
@@ -877,13 +882,15 @@ namespace EDR_Report.Controllers
                     PROJ.START_DATE + 1)), 'FM999,999,999,999') AS VDAY_SUB_NUM_SPREAD                                   -- 剩餘工期(純數字)加上展延
                 , TO_CHAR(NVL(PROJ.ORIGINAL_DAY, 0), 'FM999,999,999,999') || '天' AS TDAY                               -- 核定工期
                 , TO_CHAR(NVL(PROJ.ORIGINAL_DAY, 0), 'FM999,999,999,999') || '日曆天' AS TDAY_T2                        -- 核定工期
+                , TO_CHAR(NVL(PROJ.ORIGINAL_DAY, 0), 'FM999,999,999,999') || '+' ||
+                    TO_CHAR(NVL(NOTE.EXTEND_DAY, 0), 'FM999,999,999,999') || ' 日曆天' AS TDAY_T3                        -- 核定工期 + 展延天數
                 , TO_NUMBER(NVL(PROJ.ORIGINAL_DAY, 0)) + TO_NUMBER(NVL(PROJ.SPREAD_DAY, 0)) || '天' AS CONSTRUCTION_PERIOD  --工期
                 , TO_CHAR(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
                     PROJ.START_DATE + 1, 'FM999,999,999,999') || '天' AS SDAY                                           -- 累計工期
                 , TO_CHAR(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
                     PROJ.START_DATE + 1, 'FM999,999,999,999') || '日曆天' AS SDAY_T2                                    -- 累計工期
                 , TO_CHAR(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
-                    PROJ.START_DATE + 1-NOTE.NOCAL_DAY, 'FM999,999,999,999') || '日曆天' AS SDAY_T3                      -- 累計工期(扣除不計工期)
+                    PROJ.START_DATE + 1-NOTE.NOCAL_DAY, 'FM999,999,999.0') || '日曆天' AS SDAY_T3                      -- 累計工期(扣除不計工期)
                 , NOTE.M49                                                                                              -- 以下全部由紙本勾選
                 , NOTE.M50 AS M50_
                 , CASE
@@ -1145,7 +1152,7 @@ namespace EDR_Report.Controllers
     , UNIT_PRICE
     , TO_CHAR(QUANTITY, 'FM999,999,999,999') AS QUANTITY
     , TODAY_QTY
-    , REPLACE(TODAY_QTY,0,' ') TODAY_QTY0_NULL
+    , CASE WHEN TODAY_QTY = 0 THEN ' ' ELSE TODAY_QTY END TODAY_QTY0_NULL
     , TODAY_QTY_1DECI
     , TODAY_QTY_2DECI
     , SUM_QTY
