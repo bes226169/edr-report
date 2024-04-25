@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
+using NPOI.XSSF.Streaming.Values;
 using NPOI.XSSF.UserModel;
+using System;
 using System.Data;
 using System.Text.RegularExpressions;
 
@@ -120,6 +122,18 @@ namespace EDR_Report.Controllers
                 /// <param name="cd"></param>
                 /// <returns></returns>
                 workOrder = "1cb105";
+            }
+            else if (projectId == 5700)
+            {
+                /// <summary>
+                /// B1C 桃綠工務所
+                /// <para>Project ID: 5700</para>
+                /// <para>工令: 1CB106</para>
+                /// </summary>
+                /// <param name="state"></param>
+                /// <param name="cd"></param>
+                /// <returns></returns>
+                workOrder = "1cb106";
             }
             else if (projectId == 5780)
             {
@@ -238,10 +252,76 @@ namespace EDR_Report.Controllers
                 6040 => GetProjConsOverview(db, projectId, calendarDate, myuserId, "1", false), // 1:所有, 2:本日
                 5541 => GetProjConsOverview(db, projectId, calendarDate, myuserId, "1", false),
                 5782 => GetProjConsOverview(db, projectId, calendarDate, myuserId, "1", false),
-                4760 => GetProjConsOverview(db, projectId, calendarDate, myuserId, "1", false),
+                //4760 => GetProjConsOverview(db, projectId, calendarDate, myuserId, "1", false),
                 5520 => GetProjConsOverview(db, projectId, calendarDate, myuserId, "1", false),
                 _ => GetProjConsOverview(db, projectId, calendarDate, myuserId, state, false)
             };
+
+            // 華桂需求:加本月完成數量8/17有值
+            Dictionary<string, object[]> projConsOverview_5780_v1;
+            Dictionary<string, object[]> projConsOverview_5780_v2;
+            if (projectId == 5780)
+            {
+                DateTime firstDayOfThisMonth = new(calendarDate.Year, calendarDate.Month, 1); // 本月的第一天
+                DateTime lastDayOfLastMonth = firstDayOfThisMonth.AddDays(-1); // 上個月的最後一天
+                projConsOverview_5780_v1 = GetProjConsOverview(db, projectId, calendarDate, myuserId, "1", false);
+                projConsOverview_5780_v2 = GetProjConsOverview(db, projectId, lastDayOfLastMonth, myuserId, "1", false);
+                object[] values1 = projConsOverview_5780_v1["SUM_EDR_QUANTITY_ORIG"] as object[];
+                object[] values2 = projConsOverview_5780_v2["SUM_EDR_QUANTITY_ORIG"] as object[];
+                object[] name = projConsOverview_5780_v1["NAME"] as object[];
+                object[] name_orig = projConsOverview["NAME"] as object[];
+                object[] own_control_item = projConsOverview_5780_v1["OWN_CONTROL_ITEM"] as object[];
+                object[] own_control_item_orig = projConsOverview["OWN_CONTROL_ITEM"] as object[];
+                //if (name_orig.Length == 0)
+                //{
+                //    return BadRequest();
+                //}
+                decimal[] diff = new decimal[values1.Length];
+                if (state == "1")
+                {
+                    for (int i = 0; i < values1.Length; i++)
+                    {
+                        decimal value1 = Convert.ToDecimal(values1[i]);
+                        decimal value2 = Convert.ToDecimal(values2[i]);
+                        if ((string)own_control_item[i] != "S")
+                        {
+                            diff[i] = value1 - value2;
+
+                            projConsOverview["SUM_EDR_QUANTITY_MONTHTODATE"][i] = diff[i].ToString("#,##0.#0");
+                        }
+                        else
+                        {
+                            projConsOverview["SUM_EDR_QUANTITY_MONTHTODATE"][i] = ' ';
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < name_orig.Length; i++)
+                    {
+
+                 
+                        for(int j =0;j< name.Length; j++)
+                        {
+                            if (name_orig[i].ToString() == name[j].ToString())
+                            {
+                                decimal value1 = Convert.ToDecimal(values1[j]);
+                                decimal value2 = Convert.ToDecimal(values2[j]);
+                                if ((string)own_control_item_orig[i] != "S")
+                                {
+
+                                    diff[i] = value1 - value2;
+                                projConsOverview["SUM_EDR_QUANTITY_MONTHTODATE"][i] = diff[i].ToString("#,##0.#0");
+                                }
+                                else
+                                {
+                                    projConsOverview["SUM_EDR_QUANTITY_MONTHTODATE"][i] = ' ';
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             //var projConsOverviewSpec = GetProjConsOverview(db, projectId, calendarDate, myuserId, state, true);
             var projMan = projectId switch
             {
@@ -274,7 +354,9 @@ namespace EDR_Report.Controllers
             var projMilestone = GetProjMilestone(db, projectId);
             // 待確認資料來源
             projInfo["CONSTRUCTOR"] = new object[] { "中華工程股份有限公司" };
-        
+            string result;
+
+  
             // 建立資料字典檔(只增不刪)
             Dictionary<string, object[]> variables = new()
             {
@@ -298,29 +380,40 @@ namespace EDR_Report.Controllers
                 { "$v_day$", projInfo["VDAY"] },                           //1,234天
                 { "$t_day_t2$", projInfo["TDAY_T2"] },                     //1,234日曆天
                 { "$t_day_t3$", projInfo["TDAY_T3"] },                     //1,234日曆天
+                { "$t_day1_5700$", projInfo["TDAY1_5700"] },                     //1,234日曆天
+                { "$t_day2_5700$", projInfo["TDAY2_5700"] },                     //1,234日曆天
                 { "$s_day_t2$", projInfo["SDAY_T2"] },                     //1,234日曆天
                 { "$s_day_t3$", projInfo["SDAY_T3"] },                     //1,234.0日曆天
+                { "$s_day_5700$", projInfo["SDAY_5700"] },                     //1,234.0日曆天
                 { "$v_day_t2$", projInfo["VDAY_T2"] },                     //1,234日曆天
                 { "$v_day_sub$", projInfo["VDAY_SUB"] },
+
                 { "$vday_sub_t2$", projInfo["VDAY_SUB_T2"] },               //1,234.0日曆天
-                { "$vday_sub_t3$", projInfo["VDAY_SUB_T3"] },               
+                { "$vday_sub_t3$", projInfo["VDAY_SUB_T3"] },
+                { "$vday_sub_t4$", projInfo["VDAY_SUB_T4"] },
                 { "$vday_sub_num$", projInfo["VDAY_SUB_NUM"] },
                 { "$vday_sub_num_spread$", projInfo["VDAY_SUB_NUM_SPREAD"] },
+                { "$v_day1_5700$", projInfo["VDAY1_5700"] },
                 { "$extend_day_t2$", projInfo["EXTEND_DAY_T2"] },           // note 展延
                 { "$spread_day$", projInfo["SPREAD_DAY"] },
                 { "$spread_day_t2$", projInfo["SPREAD_DAY_T2"] },
                 { "$spread_day_num$", projInfo["SPREAD_DAY_NUM"] },
                 { "$state_date$", projInfo["START_DATE"] },
+                { "$state_date_t2$", projInfo["START_DATE_T2"] },
                 { "$end_date$", projInfo["END_DATE"] },
+                { "$end_date_t2$", projInfo["END_DATE_T2"] },
+                { "$end_date1_5700$", projInfo["END_DATE1_5700"] },
                 { "$state_date_wkd$", projInfo["START_DATE_WKD"] },
                 { "$end_date_wkd$", projInfo["END_DATE_WKD"] },
                 { "$exp_percent$", projInfo["EXP_PERCENT"] },
                 { "$exp_percent_t2$", projInfo["EXP_PERCENT_T2"] },
                 { "$exp_percent_t3$", projInfo["EXP_PERCENT_T3"] },         // 0.01
+                { "$exp_percent_t4$", projInfo["EXP_PERCENT_T4"] },         // 0.01
                 { "$today_exp_percent$", projInfo["TODAY_EXP_PERCENT"] },
                 { "$act_sum$", projInfo["ACT_SUM"] },
                 { "$act_sum_t2$", projInfo["ACT_SUM_T2"] },
                 { "$act_sum_t3$", projInfo["ACT_SUM_T3"] },                 // 0.01
+                { "$act_sum_t4$", projInfo["ACT_SUM_T4"] },                 // 0.01
                 { "$act_percent_t3$",projInfo["ACT_PERCENT_T3"] },           // 0.01
                 { "$diff_percent$",projInfo["DIFF_PERCENT"] },
                 { "$nocal_day_t2$",projInfo["NOCAL_DAY_T2"]},                //1,234.0日曆天
@@ -328,7 +421,7 @@ namespace EDR_Report.Controllers
                 { "$m51$", projInfo["M51"] },
                 { "$m52$", projInfo["M52"] },
                 { "$m53$", projInfo["M53"] },
-                { "$m54$", projInfo["M54"] },
+                { "$m54$", projInfo["M54"]},
                 { "$sign$",  new object[] { "簽章：【工地主任】(註3)" }},
 
                 { "$period1$", projMilestone["MILESTONE_NO_SUB"] },
@@ -344,10 +437,15 @@ namespace EDR_Report.Controllers
                 { "$co_col1$", projConsOverview["OWNITEM_NO"]},
                 { "$co_col2$", projConsOverview["NAME"]},
                 {"$construction_item$", projConsOverview["CONSTRUCTION_ITEM"]},
+                {"$construction_item_t2$", projConsOverview["CONSTRUCTION_ITEM_T2"]},
                 { "$co_col3$", projConsOverview["UNIT"]},
                 { "$co_col4$", projConsOverview["QUANTITY"]},
                 { "$co_col5$", projConsOverview["NOW_EDR_QUANTITY"]},
                 { "$co_col6$", projConsOverview["SUM_EDR_QUANTITY"]},
+                // 華桂需求:加本月完成數量
+                { "$co_col6_monthtodate$", projConsOverview["SUM_EDR_QUANTITY_MONTHTODATE"]},
+                { "$co_col5_nozero$", projConsOverview["NOW_EDR_QUANTITY_NOZERO"]},
+                { "$co_col6_nozero$", projConsOverview["SUM_EDR_QUANTITY_NOZERO"]},
                 { "$co_col4_qdp$", projConsOverview["QUANTITY_BY_QDP"]},
                 { "$co_col5_qdp$", projConsOverview["NOW_EDR_QUANTITY_BY_QDP"]},
                 { "$co_col6_qdp$", projConsOverview["SUM_EDR_QUANTITY_BY_QDP"]},
@@ -454,18 +552,19 @@ namespace EDR_Report.Controllers
                     /// <param name="state"></param>
                     /// <param name="cd"></param>
                     /// <returns></returns>
-                    AdjustRowNums(ws, variables, "$co_col2$");
+                    AdjustRowNums(ws, variables, "$construction_item_t2$");
                     AdjustRowNums(ws, variables, "$material_col2$");
                     AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
-                    // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
-                    AdjustRowHeight(ws, variables, "$project_name$", rowheight: 68);
-                    AdjustRowHeight(ws, variables, "$co_col2$");
-                    AdjustRowHeight(ws, variables, "$material_col2$");
-                    AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$");
+
+                    AdjustRowHeight(ws, variables, "$construction_item_t2$", rowheight: 34, force: true);
+                    AdjustRowHeight(ws, variables, "$material_col2$", rowheight: 17, force: true);
+                    AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$", rowheight:17, force:true);
                     AdjustRowHeight(ws, variables, "$note$");
                     AdjustRowHeight(ws, variables, "$note_a$");
+                    AdjustRowHeight(ws, variables, "$note_b$");
                     AdjustRowHeight(ws, variables, "$note_c$");
-                    //AdjustRowHeight(ws, variables, "$note_d$");
+                    AdjustRowHeight(ws, variables, "$note_g$");
+                    variables["$m54$"] = variables["$m54$"].Select(item => item is string stringValue ? stringValue.Replace("1.", "") : item).ToArray();
                 }
                 else if (projectId == 5520)
                 {
@@ -507,6 +606,34 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_d$");
                     AdjustRowHeight(ws, variables, "$note_g$");
                 }
+                else if (projectId == 5700)
+                {
+                    /// <summary>
+                    /// B1C 桃綠工務所
+                    /// <para>Project ID: 5700</para>
+                    /// <para>工令: 1CB106</para>
+                    /// </summary>
+                    /// <param name="state"></param>
+                    /// <param name="cd"></param>
+                    /// <returns></returns>
+                    AdjustRowNums(ws, variables, "$co_col2$");
+                    AdjustRowNums(ws, variables, "$material_col2$");
+                    AdjustRowNums(ws, variables, "$man_col1$", "$machine_col1$");
+                    //// 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
+                    //AdjustRowHeight(ws, variables, "$project_name$");
+                    AdjustRowHeight(ws, variables, "$co_col2$", rowheight: 17);
+                    AdjustRowHeight(ws, variables, "$material_col2$", rowheight: 17);
+                    AdjustRowHeight(ws, variables, "$man_col1$", "$machine_col1$", rowheight: 17);
+                    //AdjustRowHeight(ws, variables, "$note$");
+                    AdjustRowHeight(ws, variables, "$note_a$", rowheight: 17);
+                    AdjustRowHeight(ws, variables, "$note_b$", rowheight: 17);
+                    AdjustRowHeight(ws, variables, "$note_c$", rowheight: 17);
+                    AdjustRowHeight(ws, variables, "$m51$", rowheight:17);
+                    AdjustRowHeight(ws, variables, "$m52$", rowheight: 17);
+                    AdjustRowHeight(ws, variables, "$m53$", rowheight: 17);
+                    //AdjustRowHeight(ws, variables, "$note_d$");
+                    //AdjustRowHeight(ws, variables, "$note_g$");
+                }
                 else if (projectId == 5780)
                 {
                     /// <summary>
@@ -521,7 +648,7 @@ namespace EDR_Report.Controllers
                     // 依資料長度調整列數
                     AdjustRowNums(ws, variables, "$material_col2$");
                     AdjustRowNums(ws, variables, "$man_col1_2$", "$machine_col1_2$");
-                    AdjustRowNums(ws2, variables, "$co_col1$");
+                    AdjustRowNums(ws2, variables, "$co_col2$");
                     // 調整高度，要先調列數再調高度不然後面shift上去的row高度會改為預設高度
                     AdjustRowHeight(ws, variables, "$project_name$", rowheight:34);
                     AdjustRowHeight(ws, variables, "$note_d$", rowheight: 180);
@@ -534,7 +661,7 @@ namespace EDR_Report.Controllers
                     AdjustRowHeight(ws, variables, "$note_c$", rowheight: 160);
                     AdjustRowHeight(ws, variables, "$sign$", rowheight: 50);
                    
-                    AdjustRowHeight(ws2, variables, "$co_col1$");
+                    AdjustRowHeight(ws2, variables, "$co_col2$");
                     ImportDataIntoPlaceholder(ws2, variables);
                 }
                 else if (projectId == 5782)
@@ -620,7 +747,9 @@ namespace EDR_Report.Controllers
             public string? LOCATION { get; set; }
             public string? BES_ORD_NO { get; set; }
             public string? START_DATE { get; set; }
+            public string? START_DATE_T2 { get; set; }
             public string? END_DATE { get; set; }
+            public string? END_DATE_T2 { get; set; }
             public string? START_DATE_WKD { get; set; }
             public string? END_DATE_WKD { get; set; }
             public string? LAST_UPDATE_DATE { get; set; }
@@ -636,12 +765,14 @@ namespace EDR_Report.Controllers
             public string? EXP_PERCENT { get; set; }
             public string? EXP_PERCENT_T2 { get; set; }
             public string? EXP_PERCENT_T3 { get; set; }
+            public string? EXP_PERCENT_T4 { get; set; }
             public string? TODAY_EXP_PERCENT { get; set; }
             public string? ACT_PERCENT { get; set; }
             public string? ACT_PERCENT_T3 { get; set; }
             public string? ACT_SUM { get; set; }
             public string? ACT_SUM_T2 { get; set; }
             public string? ACT_SUM_T3 { get; set; }
+            public string? ACT_SUM_T4 { get; set; }
             public string? DIFF_PERCENT { get; set; }
             public string? NOCAL_DAY { get; set; }
             public string? NOCAL_DAY_T2 { get; set; }
@@ -656,15 +787,22 @@ namespace EDR_Report.Controllers
             public string? VDAY_SUB { get; set; }
             public string? VDAY_SUB_T2 { get; set; }
             public string? VDAY_SUB_T3 { get; set; }
+            public string? VDAY_SUB_T4 { get; set; }
             public string? VDAY_SUB_NUM { get; set; }
             public string? VDAY_SUB_NUM_SPREAD { get; set; }
+            public string? VDAY1_5700 { get; set; }
+            
             public string? TDAY { get; set; }
             public string? CONSTRUCTION_PERIOD { get; set; }
             public string? TDAY_T2 { get; set; }
             public string? TDAY_T3 { get; set; }
+            public string? TDAY1_5700 { get; set; }
+            public string? TDAY2_5700 { get; set; }
+            public string? END_DATE1_5700 { get; set; }
             public string? SDAY { get; set; }
             public string? SDAY_T2 { get; set; }
             public string? SDAY_T3 { get; set; }
+            public string? SDAY_5700 { get; set; }
             public string? M49 { get; set; }
             public string? M50_ { get; set; }
             public string? M50 { get; set; }
@@ -727,11 +865,16 @@ namespace EDR_Report.Controllers
             public string? NAME { get; set; }
             public string? UNIT { get; set; }
             public string? CONSTRUCTION_ITEM { get; set; }
+            public string? CONSTRUCTION_ITEM_T2 { get; set; }
             public string? OWN_CODE { get; set; }
             public string? OWN_CONTROL_ITEM { get; set; }
             public string? QUANTITY { get; set; }
             public string? NOW_EDR_QUANTITY { get; set; }
             public string? SUM_EDR_QUANTITY { get; set; }
+            public string? SUM_EDR_QUANTITY_MONTHTODATE { get; set; }
+            public string? SUM_EDR_QUANTITY_ORIG { get; set; }
+            public string? NOW_EDR_QUANTITY_NOZERO { get; set; }
+            public string? SUM_EDR_QUANTITY_NOZERO { get; set; }
             public string? QUANTITY_BY_QDP { get; set; }
             public string? NOW_EDR_QUANTITY_BY_QDP { get; set; }
             public string? SUM_EDR_QUANTITY_BY_QDP { get; set; }
@@ -813,9 +956,15 @@ namespace EDR_Report.Controllers
                 , TO_CHAR(PROJ.START_DATE, 
                     'yyy""年""MM""月""dd""日""',
                     'NLS_CALENDAR= ''ROC Official''NLS_DATE_LANGUAGE=''TRADITIONAL CHINESE''') AS START_DATE
+                , TO_CHAR(PROJ.START_DATE, 
+                    'yyy"" 年 ""MM"" 月 ""dd"" 日 ""',
+                    'NLS_CALENDAR= ''ROC Official''NLS_DATE_LANGUAGE=''TRADITIONAL CHINESE''') AS START_DATE_T2
                 , TO_CHAR(PROJ.END_DATE, 
                     'yyy""年""MM""月""dd""日""', 
                     'NLS_CALENDAR= ''ROC Official''NLS_DATE_LANGUAGE=''TRADITIONAL CHINESE''') AS END_DATE
+                , TO_CHAR(PROJ.END_DATE, 
+                    'yyy"" 年 ""MM"" 月 ""dd"" 日 ""', 
+                    'NLS_CALENDAR= ''ROC Official''NLS_DATE_LANGUAGE=''TRADITIONAL CHINESE''') AS END_DATE_T2
                 , TO_CHAR(PROJ.START_DATE, 
                     'yyy""年""MM""月""dd""日""(fmDay)',
                     'NLS_CALENDAR= ''ROC Official''NLS_DATE_LANGUAGE=''TRADITIONAL CHINESE''') AS START_DATE_WKD
@@ -845,14 +994,16 @@ namespace EDR_Report.Controllers
                 , TO_CHAR(NVL(NOTE.EXP_PERCENT,-1) * 100.0, 'FM999,999.0000') || '%' AS EXP_PERCENT                     -- 預定進度(%) (至本日累計預定進度)
                 , TO_CHAR(NVL(NOTE.EXP_PERCENT,-1) * 1.0, 'FM999,999.000') || '%' AS EXP_PERCENT_T2 
                 , TO_CHAR(NVL(NOTE.EXP_PERCENT,-1) * 1.0, 'FM999,999.00')  AS EXP_PERCENT_T3
+                , TO_CHAR(NVL(NOTE.EXP_PERCENT,-1) * 1.0, 'FM999,999.00') || '%' AS EXP_PERCENT_T4
                 ,TO_CHAR(NVL(EXP_PERCENT -(select EXP_PERCENT
                                              FROM VSUSER.BES_EDR_NOTES 
                                             WHERE CALENDAR_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd')-1
                                               and project_id = :projectId),-1) * 1.0, 'FM999,990.00') as TODAY_EXP_PERCENT    --本日預定進度(今日累計-昨日累計)
-                , NVL(NOTE.ACT_PERCENT, -1) AS ACT_PERCENT                                                              -- 本日實際進度
+                , NVL(NOTE.ACT_PERCENT, -1) AS ACT_PERCENT                                                                    -- 本日實際進度
                 , TO_CHAR(NVL(NOTE.ACT_PERCENT, -1) * 1.0, 'FM999,990.00') AS ACT_PERCENT_T3
                 , TO_CHAR(NVL(NOTE.ACT_SUM, -1) * 100.0, 'FM999,999.0000') || '%' AS ACT_SUM                            -- 實際進度(%) (至本日累計實際進度)
                 , TO_CHAR(NVL(NOTE.ACT_SUM, -1) * 1.0, 'FM999,999.000') || '%' AS ACT_SUM_T2
+                , TO_CHAR(NVL(NOTE.ACT_SUM, -1) * 1.0, 'FM999,999.00') || '%' AS ACT_SUM_T4
                 , TO_CHAR(NVL(NOTE.ACT_SUM,-1) * 1.0, 'FM999,999.00')  AS ACT_SUM_T3
                 , TO_CHAR(TO_NUMBER(NOTE.ACT_SUM) - TO_NUMBER(NOTE.EXP_PERCENT), 'FM9990.000') || '%' AS DIFF_PERCENT   -- 超前或落後(%)
                 , NVL(NOTE.NOCAL_DAY, -1) AS NOCAL_DAY                                                                  -- 免計工期(天
@@ -869,6 +1020,9 @@ namespace EDR_Report.Controllers
                 , TO_CHAR((PROJ.ORIGINAL_DAY - 
                     TO_NUMBER(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
                     PROJ.START_DATE + 1)), 'FM999,999,999,999') || '天' AS VDAY_SUB                                     -- 剩餘工期 核定減累計
+                , TO_CHAR((PROJ.ORIGINAL_DAY - 
+                    TO_NUMBER(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
+                    PROJ.START_DATE + 0)), 'FM999,999,999,999') || '天' AS VDAY_SUB_T4                                     -- 剩餘工期 核定減累計
                 , TO_CHAR((PROJ.ORIGINAL_DAY - 
                     TO_NUMBER(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
                     PROJ.START_DATE + 1)), 'FM999,999,990.0') || '日曆天' AS VDAY_SUB_T2                                 -- 剩餘工期(日曆天)
@@ -891,66 +1045,93 @@ namespace EDR_Report.Controllers
                     PROJ.START_DATE + 1, 'FM999,999,999,999') || '日曆天' AS SDAY_T2                                    -- 累計工期
                 , TO_CHAR(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
                     PROJ.START_DATE + 1-NOTE.NOCAL_DAY, 'FM999,999,999.0') || '日曆天' AS SDAY_T3                      -- 累計工期(扣除不計工期)
-                , NOTE.M49                                                                                              -- 以下全部由紙本勾選
+                -- 5700桃綠專用欄位
+                , TO_CHAR(TO_DATE(:calendarDateStr, 'yyyy/MM/dd') - 
+                    PROJ.START_DATE , 'FM999,999,999,999') || '天' AS SDAY_5700                                        -- 累計工期
+                , TO_CHAR(TO_DATE('2026/12/11', 'yyyy/MM/dd') - 
+                    PROJ.START_DATE, 'FM999,999,999,999') || '天' AS TDAY1_5700                                        --核定工期1
+                , TO_CHAR(PROJ.END_DATE - PROJ.START_DATE, 'FM999,999,999,999') || '天' AS TDAY2_5700                  --核定工期2
+                , TO_CHAR(to_date('2026/12/11', 'yyyy/MM/dd'), 
+                    'yyy"" 年 ""MM"" 月 ""dd"" 日 ""', 
+                    'NLS_CALENDAR= ''ROC Official''NLS_DATE_LANGUAGE=''TRADITIONAL CHINESE''') AS END_DATE1_5700       --完工工期1                                                    --完工日期1
+                , TO_CHAR(TO_DATE('2026/12/11', 'yyyy/MM/dd') - 
+                    TO_DATE(:calendarDateStr, 'yyyy/MM/dd'), 'FM999,999,999,999') || '天' AS VDAY1_5700                --剩餘工期1
+                , NOTE.M49                                                                                             -- 以下全部由紙本勾選
                 , NOTE.M50 AS M50_
                 , CASE
                     WHEN NOTE.M50 = 'Y' 
-                        THEN '▓有 □無'
+                        THEN '⬛有 ⬜無'
                     WHEN NOTE.M50 = 'N' 
-                        THEN '□有 ▓無'
-                    ELSE     '□有 □無'
+                        THEN '⬜有 ⬛無'
+                    ELSE     '⬜有 ⬜無'
                     END AS M50
                 , NOTE.M51 AS M51_
                 , CASE
                     WHEN NOTE.M51 = 'Y' 
-                        THEN '1.實施勤前教育(含工地預防災變及危害告知)：▓有 □無'
+                        THEN '1.實施勤前教育(含工地預防災變及危害告知)：⬛有 ⬜無'
                     WHEN NOTE.M51 = 'N' 
-                        THEN '1.實施勤前教育(含工地預防災變及危害告知)：□有 ▓無'
-                    ELSE     '1.實施勤前教育(含工地預防災變及危害告知)：□有 □無'
+                        THEN '1.實施勤前教育(含工地預防災變及危害告知)：⬜有 ⬛無'
+                    ELSE     '1.實施勤前教育(含工地預防災變及危害告知)：⬜有 ⬜無'
                     END AS M51
                 , NOTE.M52 AS M52_
                 , NOTE.M521 AS M521_
                 , CASE
                     WHEN NOTE.M52 = '1' AND NOTE.M521 = 'Y' 
-                        THEN '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：▓有 □無 ▓無新進勞工'
+                        THEN '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：⬛有 ⬜無 ⬛無新進勞工'
                     WHEN NOTE.M52 = '1' AND (NOTE.M521 = 'N' OR NOTE.M521 IS NULL)
-                        THEN '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：▓有 □無 □無新進勞工'
+                        THEN '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：⬛有 ⬜無 ⬜無新進勞工'
                     WHEN NOTE.M52 = '2' AND NOTE.M521 = 'Y' 
-                        THEN '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：□有 ▓無 ▓無新進勞工'
+                        THEN '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：⬜有 ⬛無 ⬛無新進勞工'
                     WHEN NOTE.M52 = '2' AND (NOTE.M521 = 'N' OR NOTE.M521 IS NULL)
-                        THEN '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：□有 ▓無 □無新進勞工'   
+                        THEN '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：⬜有 ⬛無 ⬜無新進勞工'   
                     WHEN NOTE.M52 IS NULL AND NOTE.M521 = 'Y' 
-                        THEN '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：□有 □無 ▓無新進勞工'
+                        THEN '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：⬜有 ⬜無 ⬛無新進勞工'
                     WHEN NOTE.M52 IS NULL AND (NOTE.M521 = 'N' OR NOTE.M521 IS NULL)
-                        THEN '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：□有 □無 □無新進勞工' 
-                    ELSE     '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：□有 □無 □無新進勞工'
+                        THEN '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：⬜有 ⬜無 ⬜無新進勞工' 
+                    ELSE     '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：⬜有 ⬜無 ⬜無新進勞工'
                     END AS M52
                 , NOTE.M53 AS M53_
                 , CASE
                     WHEN NOTE.M53 = 'Y' 
-                        THEN '3.檢查勞工個人防護具：▓有 □無'
+                        THEN '3.檢查勞工個人防護具：⬛有 ⬜無'
                     WHEN NOTE.M53 = 'N' 
-                        THEN '3.檢查勞工個人防護具：□有 ▓無'
-                    ELSE     '3.檢查勞工個人防護具：□有 □無'
+                        THEN '3.檢查勞工個人防護具：⬜有 ⬛無'
+                    ELSE     '3.檢查勞工個人防護具：⬜有 ⬜無'
                     END AS M53
                 , NOTE.M54 AS M54_
                 , NOTE.M541 AS M541_
                 , CASE
                     WHEN NOTE.M54 = '1' AND NOTE.M541 = 'Y' 
-                        THEN '1.自主檢查工地實際進用移工與核准名冊相符：▓有 □無 ▓無外籍移工'
+                        THEN '1.自主檢查工地實際進用移工與核准名冊相符：⬛有 ⬜無 ⬛無外籍移工'
                     WHEN NOTE.M54 = '1' AND (NOTE.M541 = 'N' OR NOTE.M541 IS NULL)
-                        THEN '1.自主檢查工地實際進用移工與核准名冊相符：▓有 □無 □無外籍移工'
+                        THEN '1.自主檢查工地實際進用移工與核准名冊相符：⬛有 ⬜無 ⬜無外籍移工'
                     WHEN NOTE.M54 = '2' AND NOTE.M541 = 'Y'
-                        THEN '1.自主檢查工地實際進用移工與核准名冊相符：□有 ▓無 ▓無外籍移工'
+                        THEN '1.自主檢查工地實際進用移工與核准名冊相符：⬜有 ⬛無 ⬛無外籍移工'
                     WHEN NOTE.M54 = '2' AND (NOTE.M541 = 'N' OR NOTE.M541 IS NULL)
-                        THEN '1.自主檢查工地實際進用移工與核准名冊相符：□有 ▓無 □無外籍移工'
+                        THEN '1.自主檢查工地實際進用移工與核准名冊相符：⬜有 ⬛無 ⬜無外籍移工'
                     WHEN NOTE.M54 IS NULL AND NOTE.M541 = 'Y'
-                        THEN '1.自主檢查工地實際進用移工與核准名冊相符：□有 □無 ▓無外籍移工'  
+                        THEN '1.自主檢查工地實際進用移工與核准名冊相符：⬜有 ⬜無 ⬛無外籍移工'  
                     WHEN NOTE.M54 IS NULL AND (NOTE.M541 = 'N' OR NOTE.M541 IS NULL)
-                        THEN '1.自主檢查工地實際進用移工與核准名冊相符：□有 □無 □無外籍移工'   
-                    ELSE     '1.自主檢查工地實際進用移工與核准名冊相符：□有 □無 □無外籍移工'
+                        THEN '1.自主檢查工地實際進用移工與核准名冊相符：⬜有 ⬜無 ⬜無外籍移工'   
+                    ELSE     '1.自主檢查工地實際進用移工與核准名冊相符：⬜有 ⬜無 ⬜無外籍移工'
                     END AS M54
-            FROM VSUSER.VS_PROJECTS PROJ
+            FROM 
+            (
+            SELECT 
+                 PROJECT_NAME_SHORT_N
+                ,PROJECT_ID
+                ,PROJECT_OWN_CH
+                ,ORGANIZATION_ID
+                ,LOCATION
+                ,BES_ORD_NO
+                ,END_DATE
+                ,LAST_UPDATE_DATE
+                ,SPREAD_DAY
+                ,PROJ_SPREAD_DATE
+                ,ORIGINAL_DAY
+                ,CASE WHEN PROJECT_ID = 5700 THEN TO_DATE('2019/01/02', 'yyyy/MM/dd') ELSE START_DATE END AS START_DATE
+            FROM VSUSER.VS_PROJECTS
+            ) PROJ
             LEFT JOIN (SELECT * FROM VSUSER.BES_EDR_NOTES WHERE CALENDAR_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd')) NOTE
             ON PROJ.PROJECT_ID = NOTE.PROJECT_ID
             WHERE PROJ.PROJECT_ID = :projectId
@@ -991,16 +1172,16 @@ namespace EDR_Report.Controllers
                         , -1 AS SDAY          
                         , ' ' AS M49
                         , ' ' AS M50_
-                        , '□有 □無' AS M50
+                        , '⬜有 ⬜無' AS M50
                         , ' ' AS M51_
-                        , '1.實施勤前教育(含工地預防災變及危害告知)：□有 □無' AS M51
+                        , '1.實施勤前教育(含工地預防災變及危害告知)：⬜有 ⬜無' AS M51
                         , ' ' AS M52_
                         , ' ' AS M521_
-                        , '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：□有 □無 □無新進勞工' AS M52
-                        , '3.檢查勞工個人防護具：□有 □無' AS M53
+                        , '2.確認新進勞工是否提報勞工保險(或其他商業保險)資料及安全衛生教育訓練紀錄：⬜有 ⬜無 ⬜無新進勞工' AS M52
+                        , '3.檢查勞工個人防護具：⬜有 ⬜無' AS M53
                         , ' ' AS M54_
                         , ' ' AS M541_
-                        , '1.自主檢查工地實際進用移工與核准名冊相符：□有 □無 □無外籍移工' AS M54
+                        , '1.自主檢查工地實際進用移工與核准名冊相符：⬜有 ⬜無 ⬜無外籍移工' AS M54
                     FROM dual
                     ", new
                 {
@@ -1027,18 +1208,21 @@ namespace EDR_Report.Controllers
             {
                 query3_ = "";
             }
+            //EXECUTE vsuser.bes_edr_rep1(19537, 4760, TO_DATE('2024/03/01', 'yyyy/MM/dd'), '2')
+            //--1:所有, 2:本日
             string query3 = $@"
                  SELECT 
                       OWNITEM_NO
                     , NAME
                     , NVL(TRIM(UNIT), ' ') AS UNIT
                     , OWNITEM_NO || '、' || NAME AS CONSTRUCTION_ITEM
+                    , OWNITEM_NO || ' ' || NAME AS CONSTRUCTION_ITEM_T2
                     , OWN_CODE
                     , OWN_CONTROL_ITEM
                     , TO_CHAR(NVL(QUANTITY, NULL), 'FM999,999,999,999') AS QUANTITY
                     , TO_CHAR(NVL(NOW_EDR_QUANTITY, NULL), 'FM999,999,999,999') AS NOW_EDR_QUANTITY
                     , TO_CHAR(NVL(SUM_EDR_QUANTITY, NULL), 'FM999,999,999,999') AS SUM_EDR_QUANTITY
-                    
+                    , CAST(NVL(SUM_EDR_QUANTITY,0.0000) AS FLOAT) AS SUM_EDR_QUANTITY_ORIG
                     , QUANTITY_BY_QDP
                     , NOW_EDR_QUANTITY_BY_QDP
                     , SUM_EDR_QUANTITY_BY_QDP
@@ -1065,6 +1249,13 @@ namespace EDR_Report.Controllers
                     , CASE WHEN SUM_EDR_QUANTITY = 0 THEN '-'
                         ELSE TO_CHAR(NVL(SUM_EDR_QUANTITY, NULL), 'FM999,999,999,990.0000') 
                         END AS SUM_EDR_QUANTITY_4DECI
+                    , CASE WHEN NOW_EDR_QUANTITY = 0 THEN NULL 
+                        ELSE NVL(NOW_EDR_QUANTITY, NULL)
+                        END AS NOW_EDR_QUANTITY_NOZERO
+                    , CASE WHEN SUM_EDR_QUANTITY = 0 THEN NULL 
+                        ELSE NVL(SUM_EDR_QUANTITY, NULL)
+                        END AS SUM_EDR_QUANTITY_NOZERO
+                    , NULL AS SUM_EDR_QUANTITY_MONTHTODATE
                 FROM (
                 SELECT
                       OWNITEM_NO
@@ -1075,15 +1266,15 @@ namespace EDR_Report.Controllers
                     , CASE WHEN OWN_CONTROL_ITEM = 'S' THEN 0 ELSE SUM_EDR_QUANTITY END AS SUM_EDR_QUANTITY
                     , CASE
                         WHEN OWN_CONTROL_ITEM = 'S' THEN NULL
-                        ELSE TO_CHAR(QUANTITY, 'FM9999999990.' || RPAD('0', QTY_DECIMAL_PLACE, '0'))
+                        ELSE TO_CHAR(QUANTITY, 'FM999,999,990.' || RPAD('0', QTY_DECIMAL_PLACE, '0'))
                     END AS QUANTITY_BY_QDP
                     , CASE
                         WHEN OWN_CONTROL_ITEM = 'S' THEN NULL
-                        ELSE TO_CHAR(NOW_EDR_QUANTITY, 'FM9999999990.' || RPAD('0', QTY_DECIMAL_PLACE, '0'))
+                        ELSE TO_CHAR(NOW_EDR_QUANTITY, 'FM999,999,990.' || RPAD('0', QTY_DECIMAL_PLACE, '0'))
                     END AS NOW_EDR_QUANTITY_BY_QDP
                     , CASE
                         WHEN OWN_CONTROL_ITEM = 'S' THEN NULL
-                        ELSE TO_CHAR(SUM_EDR_QUANTITY, 'FM9999999990.' || RPAD('0', QTY_DECIMAL_PLACE, '0'))
+                        ELSE TO_CHAR(SUM_EDR_QUANTITY, 'FM999,999,990.' || RPAD('0', QTY_DECIMAL_PLACE, '0'))
                     END AS SUM_EDR_QUANTITY_BY_QDP
                     , QTY_DECIMAL_PLACE           --依此項決定小數點位數
                     , OWN_CODE
@@ -1139,110 +1330,110 @@ namespace EDR_Report.Controllers
                 filterId = "";
             }
             var list = db.query<PROJECT_MMM_MODEL>("edr", $@"
-                SELECT
-    PROJECT_ID
-    , RESOURCE_CLASS
-    , RESOURCE_ID
-    , SEQUENCE_NO
-    , PBG_CODE
-    , COST_CODE
-    , NAME
-    , ROW_NUMBER() OVER (PARTITION BY RESOURCE_CLASS ORDER BY SEQUENCE_NO)||'.'||NAME AS SEQ_NAME       --加入編號的名稱
-    , UNIT
-    , UNIT_PRICE
-    , TO_CHAR(QUANTITY, 'FM999,999,999,999') AS QUANTITY
-    , TODAY_QTY
-    , CASE WHEN TODAY_QTY = 0 THEN ' ' ELSE TODAY_QTY END TODAY_QTY0_NULL
-    , TODAY_QTY_1DECI
-    , TODAY_QTY_2DECI
-    , SUM_QTY
-    , SUM_QTY_1DECI
-    , SUM_QTY_2DECI
-,TODAY_QTY_1DECI_ZEROSPACE
-,TODAY_QTY_ZEROSPACE
-    , FILTER_ID --1:所有,2:本日,3:歷史所有
-FROM (
-SELECT 
-    a.PROJECT_ID
-    , a.RESOURCE_CLASS
-    , a.RESOURCE_ID
-    , a.SEQUENCE_NO
-    , a.PBG_CODE
-    , a.COST_CODE
-    , TRIM(a.NAME) AS NAME
-    , TRIM(b.NAME) AS UNIT
-    , a.UNIT_PRICE
-    , a.QUANTITY
-    , a.CHK_SEL   -- 營管系統裡面設定此施工項目是否列印的判斷欄位
-    , NVL(c.TODAY_QTY, '0') AS TODAY_QTY
-    , NVL(c.TODAY_QTY_1DECI, '0') AS TODAY_QTY_1DECI
-    , NVL(c.TODAY_QTY_2DECI, '0') AS TODAY_QTY_2DECI
-    , NVL(c.SUM_QTY, '0') AS SUM_QTY
-    , NVL(c.SUM_QTY_1DECI, '0') AS SUM_QTY_1DECI
-    , NVL(c.SUM_QTY_2DECI, '0') AS SUM_QTY_2DECI
-,TODAY_QTY_1DECI_ZEROSPACE
-,TODAY_QTY_ZEROSPACE
-    , NVL(FILTER_ID, '3') AS FILTER_ID --1:所有,2:本日,3:歷史所有
-FROM vsuser.BES_PROJECT_RESOURCES a
-LEFT JOIN (SELECT UOM_ID, NAME FROM vsuser.VS_UOMS) b
-ON a.UOM_ID=b.UOM_ID
-LEFT JOIN(
-SELECT
-    PROJECT_ID
-    , RESOURCE_CLASS
-    , RESOURCE_ID
-     , TODAY_QTY
-    , TODAY_QTY_1DECI
-    , TODAY_QTY_2DECI
-    , SUM_QTY
-    , SUM_QTY_1DECI
-    , SUM_QTY_2DECI
-,TODAY_QTY_1DECI_ZEROSPACE
-,TODAY_QTY_ZEROSPACE
-    , CASE WHEN TODAY_QTY='0' THEN '1' ELSE '2' END AS FILTER_ID
-FROM (
-    SELECT       
-        PROJECT_ID
-        , RESOURCE_CLASS
-        , RESOURCE_ID
-        , TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
-            THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,999') AS TODAY_QTY
-        , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
-            THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,999') AS SUM_QTY
-            , CASE 
-        WHEN SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END) = 0 
-         THEN ' ' 
-          ELSE TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990.0') 
-         END AS TODAY_QTY_1DECI
-  , CASE 
-        WHEN SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END) = 0 
-         THEN ' ' 
-          ELSE TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990') 
-         END AS TODAY_QTY_ZEROSPACE
- , CASE 
-        WHEN SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END) = 0 
-         THEN ' ' 
-          ELSE TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990.0') 
-         END AS TODAY_QTY_1DECI_ZEROSPACE
-        , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
-        THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.0') AS SUM_QTY_1DECI
-        , TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
-            THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.00') AS TODAY_QTY_2DECI
-        , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
-            THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.00') AS SUM_QTY_2DECI
-    FROM vsuser.bes_edr_resqty_v 
-    GROUP BY PROJECT_ID, RESOURCE_CLASS, RESOURCE_ID
-    )
-)c
-ON a.PROJECT_ID=c.PROJECT_ID 
-AND a.RESOURCE_CLASS=c.RESOURCE_CLASS 
-AND a.RESOURCE_ID=c.RESOURCE_ID
-WHERE a.PROJECT_ID = :projectId
-AND a.CHK_SEL is NULL
-)
-WHERE RESOURCE_CLASS IN {resourceClass} --2:人,3,5:機,4:料
-AND FILTER_ID IN {filterId}
-ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
+             SELECT
+                PROJECT_ID
+                , RESOURCE_CLASS
+                , RESOURCE_ID
+                , SEQUENCE_NO
+                , PBG_CODE
+                , COST_CODE
+                , REPLACE(NAME,'	','') AS NAME
+                , ROW_NUMBER() OVER (PARTITION BY RESOURCE_CLASS ORDER BY SEQUENCE_NO)||'.'||REPLACE(NAME,'	','') AS SEQ_NAME       --加入編號的名稱
+                , REPLACE(UNIT,'.','') AS UNIT
+                , UNIT_PRICE
+                , TO_CHAR(QUANTITY, 'FM999,999,999,999') AS QUANTITY
+                , TODAY_QTY
+                , CASE WHEN TODAY_QTY = '0' THEN ' ' ELSE TODAY_QTY END TODAY_QTY0_NULL
+                , TODAY_QTY_1DECI
+                , TODAY_QTY_2DECI
+                , SUM_QTY
+                , SUM_QTY_1DECI
+                , SUM_QTY_2DECI
+            ,TODAY_QTY_1DECI_ZEROSPACE
+            ,TODAY_QTY_ZEROSPACE
+                , FILTER_ID --1:所有,2:本日,3:歷史所有
+            FROM (
+            SELECT 
+                a.PROJECT_ID
+                , a.RESOURCE_CLASS
+                , a.RESOURCE_ID
+                , a.SEQUENCE_NO
+                , a.PBG_CODE
+                , a.COST_CODE
+                , TRIM(a.NAME) AS NAME
+                , TRIM(b.NAME) AS UNIT
+                , a.UNIT_PRICE
+                , a.QUANTITY
+                , a.CHK_SEL   -- 營管系統裡面設定此施工項目是否列印的判斷欄位
+                , NVL(c.TODAY_QTY, '0') AS TODAY_QTY
+                , NVL(c.TODAY_QTY_1DECI, '0') AS TODAY_QTY_1DECI
+                , NVL(c.TODAY_QTY_2DECI, '0') AS TODAY_QTY_2DECI
+                , NVL(c.SUM_QTY, '0') AS SUM_QTY
+                , NVL(c.SUM_QTY_1DECI, '0') AS SUM_QTY_1DECI
+                , NVL(c.SUM_QTY_2DECI, '0') AS SUM_QTY_2DECI
+            ,TODAY_QTY_1DECI_ZEROSPACE
+            ,TODAY_QTY_ZEROSPACE
+                , NVL(FILTER_ID, '3') AS FILTER_ID --1:所有,2:本日,3:歷史所有
+            FROM vsuser.BES_PROJECT_RESOURCES a
+            LEFT JOIN (SELECT UOM_ID, NAME FROM vsuser.VS_UOMS) b
+            ON a.UOM_ID=b.UOM_ID
+            LEFT JOIN(
+            SELECT
+                PROJECT_ID
+                , RESOURCE_CLASS
+                , RESOURCE_ID
+                 , TODAY_QTY
+                , TODAY_QTY_1DECI
+                , TODAY_QTY_2DECI
+                , SUM_QTY
+                , SUM_QTY_1DECI
+                , SUM_QTY_2DECI
+            ,TODAY_QTY_1DECI_ZEROSPACE
+            ,TODAY_QTY_ZEROSPACE
+                , CASE WHEN TODAY_QTY='0' THEN '1' ELSE '2' END AS FILTER_ID
+            FROM (
+                SELECT       
+                    PROJECT_ID
+                    , RESOURCE_CLASS
+                    , RESOURCE_ID
+                    , TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
+                        THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,999') AS TODAY_QTY
+                    , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
+                        THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,999') AS SUM_QTY
+                        , CASE 
+                    WHEN SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END) = 0 
+                     THEN ' ' 
+                      ELSE TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990.0') 
+                     END AS TODAY_QTY_1DECI
+              , CASE 
+                    WHEN SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END) = 0 
+                     THEN ' ' 
+                      ELSE TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990') 
+                     END AS TODAY_QTY_ZEROSPACE
+             , CASE 
+                    WHEN SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END) = 0 
+                     THEN ' ' 
+                      ELSE TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') THEN QUANTITY ELSE 0 END), 'FM999,999,999,990.0') 
+                     END AS TODAY_QTY_1DECI_ZEROSPACE
+                    , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
+                    THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.0') AS SUM_QTY_1DECI
+                    , TO_CHAR(SUM(CASE WHEN DATA_DATE = TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
+                        THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.00') AS TODAY_QTY_2DECI
+                    , TO_CHAR(SUM(CASE WHEN DATA_DATE <= TO_DATE(:calendarDateStr, 'yyyy/MM/dd') 
+                        THEN NVL(QUANTITY, 0) ELSE 0 END), 'FM999,999,999,990.00') AS SUM_QTY_2DECI
+                FROM vsuser.bes_edr_resqty_v 
+                GROUP BY PROJECT_ID, RESOURCE_CLASS, RESOURCE_ID
+                )
+            )c
+            ON a.PROJECT_ID=c.PROJECT_ID 
+            AND a.RESOURCE_CLASS=c.RESOURCE_CLASS 
+            AND a.RESOURCE_ID=c.RESOURCE_ID
+            WHERE a.PROJECT_ID = :projectId
+            AND a.CHK_SEL is NULL
+            )
+            WHERE RESOURCE_CLASS IN {resourceClass} --2:人,3,5:機,4:料
+            AND FILTER_ID IN {filterId}
+            ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
                 ", new
             {
                 projectId,
@@ -1770,7 +1961,7 @@ ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
             return result;
         }
         // 依placeholder1(或與placeholder2比較)，依資料字數調整row高
-        static void AdjustRowHeight(ISheet sheet, Dictionary<string, object[]> variables, string placeholder1, string? placeholder2 = null, string? placeholder3 = null, float rowheight = 17)
+        static void AdjustRowHeight(ISheet sheet, Dictionary<string, object[]> variables, string placeholder1, string? placeholder2 = null, string? placeholder3 = null, float rowheight = 17, bool force = false)
         {
             string placeholder;
             if (!string.IsNullOrEmpty(placeholder1) && !string.IsNullOrEmpty(placeholder2) && !string.IsNullOrEmpty(placeholder3))
@@ -1937,7 +2128,15 @@ ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
                             var row = sheet.GetRow(indexesArray2[i, 0] - 1);
                             if (rowHeightCounts2 * 17 >= rowheight)
                             {
-                                row.Height = (short)(rowHeightCounts2 * 20 * 17);
+                                if (force) 
+                                {
+                                    row.Height = (short)(20 * rowheight);
+                                } 
+                                else
+                                {
+                                    row.Height = (short)(rowHeightCounts2 * 20 * 17);
+                                }
+                                
                             }
                             else
                             {
@@ -1984,7 +2183,15 @@ ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
                         var row = sheet.GetRow(indexesArray[i, 0] - 1);
                         if (rowHeightCounts * 17 >= rowheight)
                         {
-                            row.Height = (short)(rowHeightCounts * 20 * 17);
+                            if (force)
+                            {
+                                row.Height = (short)(20 * rowheight);
+                            }
+                            else
+                            {
+                                row.Height = (short)(rowHeightCounts * 20 * 17);
+                            }
+                            
                         }
                         else
                         {
@@ -2016,10 +2223,18 @@ ORDER BY PROJECT_ID, RESOURCE_CLASS, SEQUENCE_NO
                     {
                         rowHeightCounts += Math.Ceiling((double)line.Length / totalCharNum);
                     }
+
                     var row = sheet.GetRow(indexesArray[i, 0] - 1);
                     if (rowHeightCounts * 17 >= rowheight)
                     {
-                        row.Height = (short)(rowHeightCounts * 20 * 17);
+                        if (force)
+                        {
+                            row.Height = (short)(20 * rowheight);
+                        }
+                        else
+                        {
+                            row.Height = (short)(rowHeightCounts * 20 * 17);
+                        }
                     }
                     else
                     {

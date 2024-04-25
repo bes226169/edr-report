@@ -370,4 +370,3 @@ D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb102 5541(1CB102)�
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb108 5782(1CB108)大林蒲工務所 森霸二期太陽能光電設備與滯洪池統包工程.txt
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb109 5780(1CB109)華桂聯合工務所 鳥嘴潭淨水場新建統包工程(續).txt
 D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\edr1cb208 6040(1CB208)博誠工務所 高雄新市鎮1-1、1-2及1-3號道路穿越高速公路工程(第X101G標).txt
-D:\Github\edr-report\EDR_Report\bin\Debug\net6.0\Report\~$edr1cb109.xlsx
